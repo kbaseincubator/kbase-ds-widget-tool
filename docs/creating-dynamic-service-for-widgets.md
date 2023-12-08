@@ -371,90 +371,178 @@ Now we are ready to add widget support to the dynamic service!
     ✅ Widget docs copied
 
     Task completed in 0m0.673s
-
     ```
 
-## Start the service
+6. Start the service
 
-Next start the service
+    Next we'll start the service and make sure it is working.
+
+    To do this, we need to utilize a terminal in the service module directory, set two environment variables, and use `docker compose` to start the service.
+
+    ```shell
+    export KBASE_ENDPOINT=https://ci.kbase.us/services/ 
+    export SDK_CALLBACK_URL=
+    docker compose run --service-ports yourusernamesomeservice bash
+    ```
+
+    Note that the service module name has been converted to lower case; this is a
+    requirement for docker.
+
+    If docker compose fails due to the port already being allocated, set the `PORT`
+    environment variable first, like:
+
+    ```shell
+    PORT=5200 docker compose run --service-ports yourusernamesomeservice bash
+    ```
+
+    This will leave you inside the service container on the bash shell command line.
+
+    We are utilizing this workflow because it facilitates workflow similar to your local
+    machine, but inside the container.
+
+    For instance, you can determine the version of Python running in the official KBase
+    service container:
+
+    ```shell
+    % python --version
+    Python 3.6.3 :: Anaconda, Inc.
+    ```
+
+    You can now start the server:
+
+    ```shell
+    ./scripts/start_server.sh
+    ```
+
+    You should see a long printout of the status of the server:
+
+    ```shell
+    *** Starting uWSGI 2.0.17.1 (64bit) on [Fri Dec  8 18:39:47 2023] ***
+    compiled with version: 4.8.2 20140120 (Red Hat 4.8.2-15) on 15 August 2018 17:45:24
+    os: Linux-6.5.11-linuxkit #1 SMP PREEMPT_DYNAMIC Mon Dec  4 10:03:25 UTC 2023
+    nodename: yourusernamesomeservice
+    machine: x86_64
+    clock source: unix
+    pcre jit disabled
+    detected number of CPU cores: 6
+    current working directory: /kb/module
+    detected binary path: /miniconda/bin/uwsgi
+    uWSGI running as root, you can use --uid/--gid/--chroot options
+    *** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+    your memory page size is 4096 bytes
+    detected max file descriptor number: 1048576
+    lock engine: pthread robust mutexes
+    thunder lock: disabled (you can enable it with --thunder-lock)
+    uWSGI http bound on :5000 fd 4
+    uwsgi socket 0 bound to TCP address 127.0.0.1:42723 (port auto-assigned) fd 3
+    uWSGI running as root, you can use --uid/--gid/--chroot options
+    *** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+    Python version: 3.6.3 |Anaconda, Inc.| (default, Nov 20 2017, 20:43:55)  [GCC 7.2.0]
+    Python main interpreter initialized at 0xc553b0
+    uWSGI running as root, you can use --uid/--gid/--chroot options
+    *** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+    python threads support enabled
+    your server socket listen backlog is limited to 100 connections
+    your mercy for graceful operations on workers is 60 seconds
+    mapped 688464 bytes (672 KB) for 25 cores
+    *** Operational MODE: preforking+threaded ***
+    WSGI app 0 (mountpoint='') ready in 0 seconds on interpreter 0xc553b0 pid: 46 (default app)
+    uWSGI running as root, you can use --uid/--gid/--chroot options
+    *** WARNING: you are running uWSGI as root !!! (use the --uid flag) *** 
+    *** uWSGI is running in multiple interpreter mode ***
+    spawned uWSGI master process (pid: 46)
+    spawned uWSGI worker 1 (pid: 48, cores: 5)
+    spawned uWSGI worker 2 (pid: 51, cores: 5)
+    spawned uWSGI worker 3 (pid: 56, cores: 5)
+    spawned uWSGI worker 4 (pid: 63, cores: 5)
+    spawned uWSGI worker 5 (pid: 67, cores: 5)
+    spawned uWSGI http 1 (pid: 72)
+    ```
+
+    As a sanity check, you can call the `status` endpoint within the service. This is a
+    standard endpoint in all KBase dynamic services (and most KBase core services as well).
+
+    From any terminal window, issue this command (assuming you have the `curl` program
+    installed, if not, see below). Also, note that if you had to use a different port,
+    replace the `5100` which whichever port you used.
+
+    ```shell
+    curl -X POST http://localhost:5100 \
+        -d '{"version": "1.1", "id": "123", "method": "yourusernameSomeService.status", "params": []}'
+    ```
+
+    and you should get a response like this:
+
+    ```json
+    {
+        "version": "1.1",
+        "result": [
+            {
+                "state": "OK",
+                "message": "",
+                "version": "0.0.1",
+                "git_url": "",
+                "git_commit_hash": "83fb078dd8806965a8b642d0f0fb01c4b194a683"
+            }
+        ],
+        "id": "123"
+    }
+    ```
+
+7. Try out the demo widgets
+
+    The widget support package comes with some widget tools and also sample widgets.
+
+    In this document we'll cover just two: the config widget, and the demos widget.
+
+8. The `config` widget
+
+    The config widget simply displays the contents of the service's configuration. This
+    is a "Python widget", in that it is run as Python code that generates html.
+
+    To invoke it, visit this url:
+
+    [http://localhost:5100/widgets/config](http://localhost:5100/widgets/config)
+
+    (substituting for port 5100 if you need to).
+
+    THe code for this widget resides in `src/widgets/config`.
+
+9. The `demos` widget
+
+    The demos widget is both a widget itself, and contains links to or other ways of
+    accessing widgets.
+
+    To invoke it, visit this url:
+
+    [http://localhost:5100/widgets/demos](http://localhost:5100/widgets/demos)
+
+    (substituting for port 5100 if you need to).
+
+    THe code for this widget resides in `src/widgets/demos`.
 
 
-```shell
-export KBASE_ENDPOINT=https://ci.kbase.us/services/ 
-export SDK_CALLBACK_URL=
-docker compose run --service-ports yourusernamesomeservice bash
-```
-
-If docker compose fails due to the port already being allocated, set the `PORT`
-environment variable first, like:
-
-```shell
-PORT=5200 docker compose run --service-ports yourusernamesomeservice bash
-```
-
-This will leave you in side the service container on the bash shell command line. You
-can now start the server:
-
-```shell
-./scripts/start_server.sh
-```
-
-
-
-Try it out:
-
-- first the status endpoint:
-
-```shell
-curl -X POST http://localhost:5200 \
-    -d '{"version": "1.1", "id": "123", "method": "yourusernameSomeService.status", "params": []}'
-```
-
-and you should get this response:
-
-```json
-{
-    "version": "1.1",
-    "result": [
-        {
-            "state": "OK",
-            "message": "",
-            "version": "0.0.1",
-            "git_url": "",
-            "git_commit_hash": "83fb078dd8806965a8b642d0f0fb01c4b194a683"
-        }
-    ],
-    "id": "123"
-}
-```
-
-The widget enhancement comes with a couple of sample widgets to get you started.
-
-http://localhost:5200/widgets/demos
-
-
-
-- then the "config" widget:
-
-http://localhost:5200/widgets/config
-
-
-
-
----
 
 ## Notes
 
+### Conversion of standard SDK app to a dynamic service
 
-## Copy docker-compose.yml
+Other than the configuration change to set the dynamic service flag, there are bits of
+the codebase that assume it is running as an app.
 
+The only one that causes a problem is that when the `SDK_CALLBACK_URL` is not set, the
+server will fail to start.
 
-need to deal with `SDK_CALLBACK_URL`.
+The line of code looks something like:
 
-It is in quite a few locations which should be conditionally avoided, or omitted by
-kb-sdk, but for now we can set it to an empty string.
+```python
+self.callback_url = os.environ['SDK_CALLBACK_URL']
+```
 
+A direct dict attribute reference like this will fail if the attribute does not exist.
 
-        self.callback_url = os.environ['SDK_CALLBACK_URL']
+The documentation instructs to modify the codebase to avoidthis problem. However, there
+are several parts of the codebase that are affected by this. That code is not run into
+when in dynamic service mode, but the missing environment variable is a problem easily
+resolved by setting it to an empty string, which is what the instructions above provide.
 
-from  
