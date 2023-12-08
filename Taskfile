@@ -16,7 +16,7 @@ function init-module {
         echo "Usage: ./Taskfile init-module SERVICE_DIR"
         exit 1
     fi
-    docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool "python src/init.py /kb/module_dir"
+    docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool "python src/init_module.py /kb/module_dir"
 }
 
 function check-module {
@@ -32,7 +32,7 @@ function check-module {
         exit 1
     fi
     echo "Using service directory ${1}"
-    docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool "python src/check.py /kb/module_dir"
+    docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool "python src/check_module.py /kb/module_dir"
 }
 
 function shell {

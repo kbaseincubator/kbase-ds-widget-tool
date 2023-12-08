@@ -5,8 +5,9 @@ from datetime import datetime
 from pathlib import Path
 from string import Template
 
-from utils import error_exit, feedback
 from yaml import YAMLError, safe_load
+
+from .utils import error_exit, feedback
 
 
 class WidgetSupport(object):
