@@ -1,14 +1,14 @@
-FROM python:3.12
+FROM python:3.12-slim-bookworm
 LABEL org.opencontainers.image.authors="KBase Developer"
 
-RUN apt update -y
+RUN apt update -y && apt-get install -y curl
 
 # # Install poetry; we can install via apt-get, but that does not give us control over the version
-RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.2.0
+RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.7.1
 
 # # Ensure standard path including local binaries (where poetry was installed)
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin
-ENV PYTHONPATH=/kb/module/src
+ENV PYTHONPATH=/kb/module
 
 # #
 # # Install Python dependencies
@@ -31,4 +31,4 @@ RUN rm -rf /kb/tmp && \
     chmod -R a+rw /kb/module 
 
 ENTRYPOINT [ "/bin/bash", "-l", "-c" ]
-CMD [ 'python', 'src/help.py' ]
+CMD [ 'python', 'src/status.py' ]

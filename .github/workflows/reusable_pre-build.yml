@@ -1,0 +1,25 @@
+---
+name: Code Checks & Tests
+on:
+  workflow_call:
+jobs:
+  code-checks-n-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out GitHub Repo
+        uses: actions/checkout@v3
+
+      # TODO: the following
+
+      # - name: Run type checks via pyright
+      #   run: ./Taskfile pyright
+
+      # - name: Run "black" to ensure is formatted correctly
+      #   run: ./Taskfile black
+
+      # - name: Generate openapi.json and compare to stored one
+      #   run: ./Taskfile check-openapi
+
+      # - name: Run all tests
+      #   run: ./Taskfile test
+

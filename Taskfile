@@ -7,13 +7,13 @@ function alias-me {
 function init-module {
     if [ -z "${1}" ] 
     then
-        echo "Usage: ./Taskfile init-module SERVICE_DIR"
+        echo "Usage: ./Taskfile init-module MODULE_DIR"
         exit 1
     fi
     if [ ! -d "${1}" ] 
     then
         echo "Error: The given service directory '${1}' is not a valid directory"
-        echo "Usage: ./Taskfile init-module SERVICE_DIR"
+        echo "Usage: ./Taskfile init-module MODULE_DIR"
         exit 1
     fi
     docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool "python src/init_module.py /kb/module_dir"
@@ -22,13 +22,13 @@ function init-module {
 function check-module {
     if [ -z "${1}" ] 
     then
-        echo "Usage: ./Taskfile shell SERVICE_DIR"
+        echo "Usage: ./Taskfile shell MODULE_DIR"
         exit 1
     fi
     if [ ! -d "${1}" ] 
     then
         echo "Error: The given service directory '${1}' is not a valid directory"
-        echo "Usage: ./Taskfile check-module SERVICE_DIR"
+        echo "Usage: ./Taskfile check-module MODULE_DIR"
         exit 1
     fi
     echo "Using service directory ${1}"
@@ -38,19 +38,22 @@ function check-module {
 function shell {
     if [ -z "${1}" ] 
     then
-        echo "Usage: ./Taskfile shell SERVICE_DIR"
+        echo "Usage: ./Taskfile shell MODULE_DIR"
         exit 1
     fi
     if [ ! -d "${1}" ] 
     then
         echo "Error: The given service directory '${1}' is not a valid directory"
-        echo "Usage: ./Taskfile shell SERVICE_DIR"
+        echo "Usage: ./Taskfile shell MODULE_DIR"
         exit 1
     fi
     echo "Using service directory ${1}"
     docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool bash
 }
 
+function bash {
+    docker compose run --rm  ds-widget-tool bash
+}
 
 function status {
     docker compose run --rm ds-widget-tool "python src/status.py"

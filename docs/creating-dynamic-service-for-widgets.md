@@ -216,7 +216,7 @@ Now we are ready to add widget support to the dynamic service!
     copy the result, and set the environment variable like so:
 
     ```shell
-    export SERVICE_DIR=/path/to/projectdir/yourusernameSomeService
+    export MODULE_DIR=/path/to/projectdir/yourusernameSomeService
     ```
 
     There are various clever ways of doing this on the command line, but many are not

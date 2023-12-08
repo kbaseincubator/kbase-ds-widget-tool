@@ -1,0 +1,15 @@
+---
+name: Manual Build & Push
+on:
+  workflow_dispatch:
+jobs:
+  pre-build:
+    uses: ./.github/workflows/reusable_pre-build.yml
+    secrets: inherit
+  build-push:
+    needs: pre-build
+    uses: kbase/.github/.github/workflows/reusable_build-push.yml@main
+    with:
+      name: '${{ github.event.repository.name }}-develop'
+      tags: br-${{ github.ref_name }}
+    secrets: inherit
