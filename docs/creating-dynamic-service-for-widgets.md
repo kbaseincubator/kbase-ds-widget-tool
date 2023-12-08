@@ -120,12 +120,13 @@ modifies the process to fit this tutorial.
 
     The output shows that we are on the `main` branch, and there are no changed files listed.
 
-## B. Add Widget Support to the Dynamic Service
+## B. Get the Dynamic Service Widget Tool `ds-widget-tool`
 
-Now we are ready to add widget support to the dynamic service.
+Before we continue to convert this KBase service module into a dynamic service with
+widgets, let us get familiar with the tool we'll be using.
 
-To do this we use the `ds-widget-tool` which, similar to `kb-sdk`, runs as a docker
-container.
+This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar to
+`kb-sdk`, runs as a docker container.
 
 1. Obtain a copy of the tool
 
@@ -148,100 +149,205 @@ container.
 
 2. Ensure the tool will work correctly
 
-    To ensure the tool will work
+    The tool works via a script named `Taskfile`, to which you will provide commands and parameters.
 
-1. Convert the app to a dynamic service
+    First, you can run the tool without any command to get a help screen which lists
+    available commands:
 
-By default, the KBase SDK will create an "app", which differs from a "dynamic service"
-in that the app is run through the execution service, and the dynamic service is a live
-web app.
+    ```shell
+    ./Taskfile
+    ``
 
-Since this tool can be used to convert any dynamic service, a new one or an old one, but
-should not be applied to an app, we do require that a new SDK module be converted to a
-dynamic service first
+    which prints
 
-To convert the module to a dynamic service, we simply add the following to the end of
-the 
-`kbase.cfg` configuration file:
+    ```shell
+    To find out more about them, either read the source
+    for ./Taskfile or the docs located in 'docs/tasks.md'.
+    Tasks:
+        1	alias-me
+        2	check-module
+        3	help
+        4	init-module
+        5	shell
+        6	status
+    Task completed in 0m0.009s
+    ```
 
-```yaml
-service-config:
-    dynamic-service: true
-```
+    To ensure the tool will work, run the `status` command:
 
-which should then look like:
+    For convenience, we'll be running the commands inside the ds-widget-tool directory:
 
-```yaml
-module-name:
-    yourusernameSomeService
+    ```shell
+    cd ds-widget-tool
+    ```
 
-module-description:
-    A KBase module
+    Then run the `status` command:
 
-service-language:
-    python
+    ```shell
+    ./Taskfile status
+    ```
 
-module-version:
-    0.0.1
+    You should see:
 
-owners:
-    [yourusername]
+    ```shell
+    This is the ds-widget-tool, a docker-based set of Python scripts
+    to help manage a KBase dynamic service with widgets.
 
-service-config:
-    dynamic-service: true
+    See https://github.com/eapearson/ds-widget-tool.
+    ```
 
-```
+## C. Add Widget Support to the Dynamic Service
 
-8. Commit the changes
+Now we are ready to add widget support to the dynamic service!
 
-Let's go ahead and commit those changes, so we can observe what is changed when we
-convert the codebase to support widgets.
+1. Verify the module
 
-```shell
-git add --all
-git commit -m "Ran 'make all' and converted to dynamic service"
-```
+    Our first step is to ensure that the KBase SDK service module is ready to receive
+    widget support. To do this, we run the `check-module` command, passing it the
+    directory of the service we wish to work with.
 
-9. Use the `ds-widget-tool` to upgrade the module
+    ```shell
+    ./Taskfile check-module $SERVICE_DIR    
+    ```
 
-Now we are ready to run the ds widget tool to add the widget support to the module
-codebase.
+    where `$SERVICE_DIR` is the absolute path to the service module directory.
 
-The tool is available from github at `https://github.com/kbase/ds-widget-tool`
+    You may use any means necessary to determine the absolute path to the directory, the
+    simplest of which is probably to open a terminal in that directory, issue `pwd`, 
+    copy the result, and set the enviroment variable like so:
 
-> TODO: this will probably change, and we also want to allow users to use this from the
-> command line via the image/container...
+    ```shell
+    export SERVICE_DIR=/path/to/projectdir/yourusernameSomeService
+    ```
 
-To get started, clone the tool into your project directory
+    There are various clever ways of doing this on the command line, but many are not
+    universal across systems.
 
-```shell
-git clone https://github.com/kbase/ds-widget-tool
-```
+    E.g. this
 
-And then change into the tool's directory:
+    ```shell
+    ./Taskfile check-module $(find $(cd ..; pwd) -maxdepth 1 -name yourusernameSomeService)
+    ```
 
-```shell
-cd ds-widget-tool
-```
+    or
 
-The tool is run through a shell script named `Taskfile`.
+    ```shell
+    export SERVICE_DIR=$(find $(cd ..; pwd) -maxdepth 1 -name yourusernameSomeService)
+    ./Taskfile check-module $SERVICE_DIR
+    ```
 
-If you run `Taskfile` without a command, it will show a little help screen:
+    should work on most POSIX compliant systems.
 
-```shell
-% ./Taskfile
-./Taskfile <task> <args>
-Runs the tasks listed below.
-To find out more about them, either read the source
-for ./Taskfile or the docs located in 'docs/tasks.md'.
-Tasks:
-     1  alias-me
-     2  check-module
-     3  help
-     4  init-module
-     5  shell
-Task completed in 0m0.007s
-```
+    In any case, you should see something like this:
+
+    ```shell
+    Using service directory /Users/erikpearson/Work/KBase/2023/service-widget/practice/yourusernameSomeService
+
+    Analyzing module directory ...
+
+
+    ✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!
+
+
+    ✅ "kbase.yml" successfully loaded
+
+
+    ❌ ERROR: Attribute service-config.dynamic-service expected in KBase Config but was not found.
+
+    Exiting with code 1.
+
+
+    Task completed in 0m0.469s
+    ```
+
+    Oh no! It looks like we have an error.
+
+    We intentionally omitted a step, to demonstrate how the tool handles problems. If it
+    detects an error, it should print a message with the prefix `❌ ERROR:`, and then
+    exit the program with error code 1.
+
+2. Convert the app to a dynamic service
+
+    By default, the KBase SDK will create an "app", which differs from a "dynamic service"
+    in that the app is run through the execution service, and the dynamic service is a live
+    web app.
+
+    Since this tool can be used to convert any dynamic service, a new one or an old one, but
+    should not be applied to an app, we do require that a new SDK module be converted to a
+    dynamic service first.
+
+    To convert the module to a dynamic service, we simply add the following to the end of
+    the `kbase.cfg` configuration file in the root of the service directory, `yourusernameSomeService`.
+
+    ```yaml
+    service-config:
+        dynamic-service: true
+    ```
+
+    which should then look like:
+
+    ```yaml
+    module-name:
+        yourusernameSomeService
+
+    module-description:
+        A KBase module
+
+    service-language:
+        python
+
+    module-version:
+        0.0.1
+
+    owners:
+        [yourusername]
+
+    service-config:
+        dynamic-service: true
+
+    ```
+
+3. Commit the changes
+
+    Let's go ahead and commit those changes, so we can observe what is changed when we
+    convert the codebase to support widgets.
+
+    In the terminal whose current working directory is the service directory `yourusernameSomeService`:
+
+    ```shell
+    git add --all
+    git commit -m "Converted to dynamic service"
+    ```
+
+4. Use the `ds-widget-tool` to upgrade the module
+
+    Now we are ready to run the ds widget tool to add the widget support to the module
+    codebase.
+
+    And then change into the tool's directory:
+
+    ```shell
+    cd ds-widget-tool
+    ```
+
+    The tool is run through a shell script named `Taskfile`.
+
+    If you run `Taskfile` without a command, it will show a little help screen:
+
+    ```shell
+    % ./Taskfile
+    ./Taskfile <task> <args>
+    Runs the tasks listed below.
+    To find out more about them, either read the source
+    for ./Taskfile or the docs located in 'docs/tasks.md'.
+    Tasks:
+        1  alias-me
+        2  check-module
+        3  help
+        4  init-module
+        5  shell
+    Task completed in 0m0.007s
+    ```
 
 9. Validate service module directory
 
