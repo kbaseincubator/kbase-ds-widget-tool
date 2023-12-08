@@ -1,0 +1,32 @@
+/* Some global styles */
+html {
+    font-size: 14px;
+    height: 100%:
+}
+
+body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.narrative-text {
+    max-width: 60rem;
+}
+
+.full-height-scrolling-text {
+    flex: 1 1 0;
+    overflow-y: auto;
+}
+
+#error {
+    display: none;
+}
+
+#widget {
+    display: none;
+}
+
+#loading {
+    display: block;
+}

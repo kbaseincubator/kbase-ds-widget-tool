@@ -1,0 +1,8 @@
+
+# BEGIN DS-SERVICE-WIDGET-IMPORT
+# Injected by the Dynamic Service Widget Tool
+#
+from ${service_module_name}.widget.widget_handler import \
+    widget_handler
+#
+# END DS-SERVICE-WIDGET-IMPORT

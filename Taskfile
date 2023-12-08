@@ -1,0 +1,65 @@
+#!/bin/bash
+
+function alias-me {
+    alias run="${PWD}/Taskfile"
+}
+
+function init-module {
+    if [ -z "${1}" ] 
+    then
+        echo "Usage: ./Taskfile init-module SERVICE_DIR"
+        exit 1
+    fi
+    if [ ! -d "${1}" ] 
+    then
+        echo "Error: The given service directory '${1}' is not a valid directory"
+        echo "Usage: ./Taskfile init-module SERVICE_DIR"
+        exit 1
+    fi
+    docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool "python src/init.py /kb/module_dir"
+}
+
+function check-module {
+    if [ -z "${1}" ] 
+    then
+        echo "Usage: ./Taskfile shell SERVICE_DIR"
+        exit 1
+    fi
+    if [ ! -d "${1}" ] 
+    then
+        echo "Error: The given service directory '${1}' is not a valid directory"
+        echo "Usage: ./Taskfile check-module SERVICE_DIR"
+        exit 1
+    fi
+    echo "Using service directory ${1}"
+    docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool "python src/check.py /kb/module_dir"
+}
+
+function shell {
+    if [ -z "${1}" ] 
+    then
+        echo "Usage: ./Taskfile shell SERVICE_DIR"
+        exit 1
+    fi
+    if [ ! -d "${1}" ] 
+    then
+        echo "Error: The given service directory '${1}' is not a valid directory"
+        echo "Usage: ./Taskfile init-module SERVICE_DIR"
+        exit 1
+    fi
+    echo "Using service directory ${1}"
+    docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool bash
+}
+
+function help {
+    echo "$0 <task> <args>"
+    echo "Runs the tasks listed below."
+    echo "To find out more about them, either read the source"
+    echo "for ${0} or the docs located in 'docs/tasks.md'."
+    echo "Tasks:"
+    # Note that this omits private functions - those prefixed with an _
+    compgen -A function | grep -e '^[^_]' | cat -n
+}
+
+TIMEFORMAT="Task completed in %3lR"
+time "${@:-help}"

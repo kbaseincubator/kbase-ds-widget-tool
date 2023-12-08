@@ -1,0 +1,14 @@
+/* Some global styles */
+html {
+    font-size: 14px;
+}
+
+.narrative-text {
+    max-width: 60rem;
+}
+
+.full-height-scrolling-text {
+    flex: 1 1 0;
+    overflow-y: auto;
+}
+

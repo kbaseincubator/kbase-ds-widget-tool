@@ -1,0 +1,9 @@
+.idea
+.pytest_cache
+.venv
+NOTES.txt
+geckodriver.log
+__pycache__
+.venv
+_trash
+_working

@@ -1,0 +1,8 @@
+.widget-container {
+    resize: vertical; 
+    overflow-y: auto; 
+    border: 1px solid silver;
+    padding: 1rem;
+    background-color: rgba(200, 200, 200, 0.5);
+    margin: 1rem 0;
+}

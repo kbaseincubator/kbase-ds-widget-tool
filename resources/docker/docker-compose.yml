@@ -1,0 +1,21 @@
+version: '3.6'
+networks:
+  kbase-dev:
+    external: true
+    name: kbase-dev
+services:
+  ${service_name}:
+    build:
+      context: .
+    container_name: ${service_name}
+    hostname: ${service_name}
+    dns: 8.8.8.8
+    volumes:
+      - .:/kb/module
+    networks:
+      - kbase-dev
+    ports:
+      - "$${PORT:-5100}:5000"
+    environment:
+      - SDK_CALLBACK_URL
+      - KBASE_ENDPOINT

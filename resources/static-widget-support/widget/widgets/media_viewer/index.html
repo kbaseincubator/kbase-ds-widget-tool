@@ -1,0 +1,157 @@
+ <html lang="en-US">
+    <head>
+        <title>Jinja2 Demo</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+        <link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/sc-2.2.0/datatables.min.css" rel="stylesheet">
+        <script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/sc-2.2.0/datatables.min.js"></script>
+        <!-- These are all the KBase / custom files we need -->
+        <!-- <link href="/widgets/media_viewer/widgets/static/style.css" rel="stylesheet"> -->
+        <script src="/widgets/assets/js/lib.js"></script>
+        <script src="/widgets/assets/js/client.js"></script>
+        <link href="/widgets/media_viewer/style.css" rel="stylesheet">
+    </head>
+    <body>
+        <div id="loading">
+            <div class="alert alert-info">
+                <span class="spinner-border"></span>
+                <span>Loading...</span>
+            </div>
+        </div>
+        <div id="error">
+            <div class="alert alert-danger" role="alert">
+                <span id="error-message"></span>
+            </div>
+        </div>
+        <div id="widget">
+            <ul class="nav nav-tabs" role="tablist" id="media-tabs">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
+                        Overview
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="compounds-tab" data-bs-toggle="tab" data-bs-target="#compounds" type="button" role="tab" aria-controls="compounds" aria-selected="false">
+                        Media Compounds
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab" aria-controls="compounds" aria-selected="false">
+                        About
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="media-tab-content" style="flex: 1 1 0;
+            overflow-y: auto;">
+                <div class="tab-pane fade show active pt-3" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                    <table class="table">
+                        <colgroup>
+                            <col style="width: 14rem;" />
+                            <col />
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>ID</th>
+                                <td id="media_object_info_id"></td>
+                            </tr>
+                            <tr>
+                                <th>Object Type</th>
+                                <td id="media_object_info_type"></td>
+                            </tr>
+                            <tr>
+                                <th>Owner</th>
+                                <td id="media_object_info_owner"></td>
+                            </tr>
+                            <tr>
+                                <th>Version</th>
+                                <td id="media_object_info_version"></td>
+                            </tr>
+                            <tr>
+                                <th>Version created at</th>
+                                <td id="media_object_info_saved_at"></td>
+                            </tr>
+                            <tr>
+                                <th>Name</th>
+                                <td id="media_object_info_name"></td>
+                            </tr>
+                            <tr>
+                                <th>Source</th>
+                                <td id="media_object_data_source"></td>
+                            </tr>
+                            <tr>
+                                <th>Is minimal?</th>
+                                <td id="media_object_info_metadata_is_minimal"></td>
+                            </tr>
+                            <tr>
+                                <th>Is defined?</th>
+                                <td id="media_object_info_metadata_is_defined"></td>
+                            </tr>
+                            <tr>
+                                <th>Number components</th>
+                                <td id="media_object_info_metadata_number_compounds"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade pt-3 dataTablesOverride-ScrollingFlexFix" id="compounds" role="tabpanel" aria-labelledby="compounds-tab">
+                    <table class="display table"  style="width: 100%" id="compounds-table">
+                        <thead>
+                            <tr>
+                                <th>Compound</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Formula</th>
+                                <th>Charge</th>
+                                <th>Min Update (mol/g CDW hr)</th>
+                                <th>Max uptake (mol/g CDW hr)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- empty body is filled by javascript -->
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="tab-pane fade pt-3" id="about" role="tabpanel" aria-labelledby="about-tab">
+                    <div class="narrative-text full-height-scrolling-text" >
+                        <p>
+                            This is an example of a static data landing page widget.
+                        </p>
+                        <p>
+                            In this case, it is a data viewer for "media" objects.
+                        </p>
+                        <p>
+                            The point of this specific viewer is to create an object viewer with minimal custom Javascript.
+                            For example, this widget uses bootstrap for most support. For example, the table styling, and tab
+                            styling and functionality.
+                        </p>
+
+                        <p>
+                            It uses jquery for DOM access, with html defining the basic
+                            layout with bootstrap classes.
+                        </p>
+
+                        <p>
+                            A pair of KBase provided libraries assist in accessing kbase
+                            apis and interacting with other kbase uis.
+                        </p>
+
+                    
+                        <p>
+                            We also enhance the viewer by showing a custom broken-image image if the compound
+                            image was not found. It looks like <img src="/widgets/media_viewer/broken-image.png" alt="Missing image image">
+                        </p>
+
+                        <blockquote>
+                            Well, it appears that a 404 is no longer returned for
+                            missing images, but rather a blank png. So the broken
+                            image ui no longer functions.
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="/widgets/media_viewer/index.js"></script>
+    </body>
+</html>

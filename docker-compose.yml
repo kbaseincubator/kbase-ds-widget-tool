@@ -1,0 +1,17 @@
+version: "3.8"
+networks:
+  kbase-dev:
+    name: kbase-dev
+    external: true
+services:
+  ds-widget-tool:
+    image: ds-widget-tool:dev
+    networks:
+      - kbase-dev
+    build:
+      context: .
+    environment:
+      - DEVELOPMENT_SERVICE_PORT
+    volumes:
+      - "${PWD}:/kb/module"
+    entrypoint: ["/bin/bash", "-l", "-c"]

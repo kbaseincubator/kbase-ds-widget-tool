@@ -1,0 +1,78 @@
+/* Some global styles */
+html {
+    font-size: 14px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.narrative-text {
+    max-width: 60rem;
+}
+
+/* bootstrap overrides */
+
+/* Let tabs be flexboxes, stretching to the full height of the cell. */
+.tab-content {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab-content > .tab-pane.active {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* dataTables overrides */
+
+/* Arrange the status line (shows # of rows) and search in the same top area, with a border on the bottom */
+/* Need this in the data tables options:
+dom: '<"dataTablesOverride-top"if>t'
+ */
+
+.dataTablesOverride-top {
+    display: flex;
+    flex-direction: row;
+    border-bottom: silver dashed 1px;
+    padding: 0.5rem;
+    align-items: flex-end;
+}
+
+.dataTablesOverride-top .dataTables_info {
+    flex: 3 1 0;
+}
+
+.dataTablesOverride-top .dataTables_filter {
+    flex: 1 1 0;
+}
+
+
+
+/* Allow scrolling area to fill the column height and scroll too */
+
+
+.dataTablesOverride-ScrollingFlexFix .dataTables_wrapper {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.dataTablesOverride-ScrollingFlexFix th {
+    vertical-align: middle;
+}
+
+.dataTablesOverride-ScrollingFlexFix  .dataTables_wrapper  > .dataTables_scroll {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.dataTablesOverride-ScrollingFlexFix .dataTables_wrapper  > .dataTables_scroll > .dataTables_scrollBody {
+    flex: 1 1 0;
+}

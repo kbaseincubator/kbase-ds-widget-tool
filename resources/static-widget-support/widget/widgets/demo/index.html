@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Demo Widgets</title>
+</head>
+<body>
+    <h1>Demo Widgets</h1>
+    
+    <h2>Media Viewer - all Javascript</h2>
+
+    <p>In this demo, we provide a landing page for the Media data type, written in
+    Javascript, utilizing jQuery, Bootstrap, DataTables, and KBase libraries.</p>
+   
+    <div id="media-viewer-js-form">
+        <div>
+            Object Ref: <input name="object-ref" style="width: 10rem;">
+        </div>
+        <div>
+            Auth Token: <input name="auth-token" style="width: 20rem;">
+        </div>
+        <div>
+            <button type="button" name="render">Render it</button>
+            <button type="button" name="kill">Kill it</button>
+        </div>
+    </div>
+
+    <script>
+    document.querySelector('#media-viewer-js-form button[name="render"]').addEventListener("click", (e) => {
+        const ref = document.querySelector('#media-viewer-js-form input[name="object-ref"]').value;
+        const token = document.querySelector('#media-viewer-js-form input[name="auth-token"]').value;
+        if (ref.length === 0) {
+            alert('Please enter a ref');
+            return;
+        }
+
+        const src = `/widgets/media_viewer?token=${token}&ref=${ref}`;
+
+        const container = document.querySelector('#media-viewer-js-container')
+
+        container.innerHTML = `<iframe src="${src}" style="width: 100%; height: 100%; border: none;" />`;
+    });
+
+    document.querySelector('#media-viewer-js-form button[name="kill"]').addEventListener("click", (e) => {
+        const container = document.querySelector('#media-viewer-js-container');
+        container.innerHTML = '';
+    });
+    </script>
+
+    <div id="media-viewer-js-container" style="resize: vertical; overflow-y: auto; border: 1px solid silver;"></div>
+
+    <h2>Media Viewer - Python with Javascript</h2>
+
+    <p>In this demo, we provide a landing page for the Media data type, written
+    primarily in Python, utilizing Jinja2, with interactivity via Javascript, utilizing
+    jQuery, Bootstrap, DataTables (not yet?), and KBase libraries.</p>
+
+    <p>Note that as this is built on the KBase kbase/sdkbase2:python image, we are
+    stuck, for now, with whatever the limitations are of the image. E.g. Python is 3.6,
+    pretty old.</p>
+   
+    <div id="media-viewer-py-form">
+        <div>
+            Object Ref: <input name="object-ref" style="width: 10rem;">
+        </div>
+        <div>
+            Auth Token: <input name="auth-token" style="width: 20rem;">
+        </div>
+        <div>
+            <button type="button" name="render">Render it</button>
+            <button type="button" name="kill">Kill it</button>
+        </div>
+    </div>
+
+    <script>
+
+    document.querySelector('#media-viewer-py-form button[name="render"]').addEventListener("click", (e) => {
+        const ref = document.querySelector('#media-viewer-py-form input[name="object-ref"]').value;
+        const token = document.querySelector('#media-viewer-py-form input[name="auth-token"]').value;
+        if (ref.length === 0) {
+            alert('Please enter a ref');
+            return;
+        }
+
+        const src = `/widgets/media_viewer_py?token=${token}&ref=${ref}`;
+
+        const container = document.querySelector('#media-viewer-py-container')
+
+        container.innerHTML = `<iframe src="${src}" style="width: 100%; height: 100%;  border: none;" />`;
+    });
+
+    document.querySelector('#media-viewer-py-form button[name="kill"]').addEventListener("click", (e) => {
+        const container = document.querySelector('#media-viewer-py-container');
+        container.innerHTML = '';
+    });
+    </script>
+
+    <div id="media-viewer-py-container" style="resize: vertical; overflow-y: auto; border: 1px solid silver;"></div>
+</body>

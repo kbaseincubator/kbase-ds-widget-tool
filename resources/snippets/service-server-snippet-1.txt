@@ -1,0 +1,11 @@
+
+        # BEGIN DS-SERVICE-WIDGET-PATH-HANDLER
+        # Injected by the Dynamic Service Widget Tool
+        #
+        path = environ['PATH_INFO']
+        if path.startswith('/widgets'):
+            status, response_headers, content = widget_handler('${service_module_name}', environ, config)
+            start_response(status, response_headers)
+            return [content]
+        #
+        # END DS-SERVICE-WIDGET-PATH-HANDLER
