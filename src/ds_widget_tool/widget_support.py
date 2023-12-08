@@ -79,7 +79,7 @@ class WidgetSupport(object):
 
     def get_resources_path(self):
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        path = os.path.join(current_dir, '../resources')
+        path = os.path.join(current_dir, '../../resources')
         if not os.path.isdir(path):
             error_exit('The resources directory was not found')
         return path

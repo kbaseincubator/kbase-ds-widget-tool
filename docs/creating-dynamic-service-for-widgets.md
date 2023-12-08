@@ -149,6 +149,12 @@ This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar 
 
 2. Ensure the tool will work correctly
 
+    For convenience, we'll be running the commands inside the ds-widget-tool directory:
+
+    ```shell
+    cd ds-widget-tool
+    ```
+
     The tool works via a script named `Taskfile`, to which you will provide commands and parameters.
 
     First, you can run the tool without any command to get a help screen which lists
@@ -173,15 +179,8 @@ This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar 
     Task completed in 0m0.009s
     ```
 
-    To ensure the tool will work, run the `status` command:
-
-    For convenience, we'll be running the commands inside the ds-widget-tool directory:
-
-    ```shell
-    cd ds-widget-tool
-    ```
-
-    Then run the `status` command:
+    To ensure the tool will work, run the `status` task, which will run the
+    `status.py` script within the container.
 
     ```shell
     ./Taskfile status
@@ -207,14 +206,14 @@ Now we are ready to add widget support to the dynamic service!
     directory of the service we wish to work with.
 
     ```shell
-    ./Taskfile check-module $SERVICE_DIR    
+    ./Taskfile check-module $$MODULE_DIR    
     ```
 
-    where `$SERVICE_DIR` is the absolute path to the service module directory.
+    where `$$MODULE_DIR` is the absolute path to the service module directory.
 
     You may use any means necessary to determine the absolute path to the directory, the
     simplest of which is probably to open a terminal in that directory, issue `pwd`, 
-    copy the result, and set the enviroment variable like so:
+    copy the result, and set the environment variable like so:
 
     ```shell
     export SERVICE_DIR=/path/to/projectdir/yourusernameSomeService
@@ -232,8 +231,8 @@ Now we are ready to add widget support to the dynamic service!
     or
 
     ```shell
-    export SERVICE_DIR=$(find $(cd ..; pwd) -maxdepth 1 -name yourusernameSomeService)
-    ./Taskfile check-module $SERVICE_DIR
+    export $MODULE_DIR=$(find $(cd ..; pwd) -maxdepth 1 -name yourusernameSomeService)
+    ./Taskfile check-module $$MODULE_DIR
     ```
 
     should work on most POSIX compliant systems.
@@ -307,7 +306,53 @@ Now we are ready to add widget support to the dynamic service!
 
     ```
 
-3. Commit the changes
+3. Run the `check-module` task again
+
+    If you repeat the `check-module` task, you will hopefully find that it succeeds:
+
+    ```shell
+     % ./Taskfile check-module $$MODULE_DIR
+    Using service directory /Users/erikpearson/Work/KBase/2023/service-widget/practice/yourusernameSomeService
+
+    Analyzing module directory ...
+
+
+    ✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!
+
+
+    ✅ "kbase.yml" successfully loaded
+
+
+    ❌ ERROR: Attribute service-config.dynamic-service expected in KBase Config but was not found.
+
+    Exiting with code 1.
+
+
+    Task completed in 0m0.498s
+    erikpearson@Eriks-MBP ds-widget-tool % ./Taskfile check-module $$MODULE_DIR
+    Using service directory /Users/erikpearson/Work/KBase/2023/service-widget/practice/yourusernameSomeService
+
+    Analyzing module directory ...
+
+
+    ✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!
+
+
+    ✅ "kbase.yml" successfully loaded
+
+
+    ✅ The service module "yourusernameSomeService" is indeed a dynamic service as well
+
+    Module name        : yourusernameSomeService
+    Module description : A KBase module
+    Service language   : python
+    Module version     : 0.0.1
+    Owners             : yourusername
+    Task completed in 0m0.535s
+
+    ```
+
+4. Commit the changes
 
     Let's go ahead and commit those changes, so we can observe what is changed when we
     convert the codebase to support widgets.
@@ -315,116 +360,19 @@ Now we are ready to add widget support to the dynamic service!
     In the terminal whose current working directory is the service directory `yourusernameSomeService`:
 
     ```shell
-    git add --all
-    git commit -m "Converted to dynamic service"
+    git add --all; git commit -m "Converted to dynamic service"
     ```
 
-4. Use the `ds-widget-tool` to upgrade the module
+5. Use the `init-module` task to upgrade the module
 
-    Now we are ready to run the ds widget tool to add the widget support to the module
+    Now we are ready to run the `init-module` task  to add the widget support to the module
     codebase.
 
-    And then change into the tool's directory:
+    Similar to when we checked the module, we issue the task in a terminal:
 
     ```shell
-    cd ds-widget-tool
+    ./Taskfile init-module $MODULE_DIR
     ```
-
-    The tool is run through a shell script named `Taskfile`.
-
-    If you run `Taskfile` without a command, it will show a little help screen:
-
-    ```shell
-    % ./Taskfile
-    ./Taskfile <task> <args>
-    Runs the tasks listed below.
-    To find out more about them, either read the source
-    for ./Taskfile or the docs located in 'docs/tasks.md'.
-    Tasks:
-        1  alias-me
-        2  check-module
-        3  help
-        4  init-module
-        5  shell
-    Task completed in 0m0.007s
-    ```
-
-9. Validate service module directory
-
-To get our feet wet, let's first run the `check-module` command to ensure that we have a
-good KBase SDK module.
-
-First, from the service module you set up above, copy the path (or type it in, your
-choice).
-
-For example, on macOS, from a terminal in the module directory, try this:
-
-```shell
-pwd | pbcopy
-```
-
-to copy the path into the clipboard.
-
-Back in the DS Tool directory, issue the following command:
-
-```shell
-./Taskfile check-module MODULE_DIR
-```
-
-where `MODULE_DIR` is the directory you copied above.
-
-Or if you used pbcopy above, try
-
-```shell
-./Taskfile check-module $(pbpaste)
-```
-
-E.g.
-
-```shell
-% ./Taskfile check-module /Users/erikpearson/Work/KBase/2023/service-widget/practice/yourusernameSomeService
-
-Using service directory /Users/erikpearson/Work/KBase/2023/service-widget/practice/yourusernameSomeService
-
-Analyzing module directory ...
-
-
-✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!
-
-
-✅ "kbase.yml" successfully loaded
-
-
-✅ The service module "yourusernameSomeService" is indeed a dynamic service as well
-
-Module name        : yourusernameSomeService
-Module description : A KBase module
-Service language   : python
-Module version     : 0.0.1
-Owners             : yourusername
-Task completed in 0m0.510s
-erikpearson@Eriks-MBP ds-widget-tool % 
-```
-
-If anything is wrong with the service directory, an error message should be
-appropriately displayed.
-
-E.g. if we have not yet converted it to a dynamic service the following error message
-will be displayed:
-
-```shell
-❌ ERROR: Attribute service-config.dynamic-service expected in KBase Config but was not found.
-```
-
-10. Add widget support to the service module
-
-Now we are ready for the show to begin.
-
-Similar to the command above:
-
-```shell
-./Taskfile init-module MODULE_DIR
-```
 
 
 ## Start the service
