@@ -7,7 +7,7 @@ from string import Template
 
 from yaml import YAMLError, safe_load
 
-from .utils import error_exit, feedback
+from .utils import error_exit, info_feedback, success_feedback
 
 
 class WidgetSupport(object):
@@ -32,7 +32,7 @@ class WidgetSupport(object):
         """
         Ensures that the given directory implements a KBase kb-sdk dynamic service
         """
-        feedback('Analyzing module directory ...')
+        info_feedback('Analyzing module directory ...')
 
         # Determine if it is a directory
         if not os.path.isdir(self.sdk_module_directory):
@@ -45,7 +45,7 @@ class WidgetSupport(object):
         if not kbase_config_file.is_file():
             error_exit(f'The KBase module config file "kbase.yml" was not found in the module directory {self.sdk_module_directory}: {kbase_config_file.resolve()}')
 
-        feedback('✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!')
+        success_feedback('"kbase.yml" config file found, it looks like a KBase kb-sdk service!')
 
         try:
             with open(kbase_config_file, "r", encoding="utf-8") as fin:
@@ -55,20 +55,20 @@ class WidgetSupport(object):
         except YAMLError as yerr:
             error_exit(f"Error parsing config file as YAML: {str(yerr)}")
 
-        feedback('✅ "kbase.yml" successfully loaded')
+        success_feedback('"kbase.yml" successfully loaded')
 
         if self.ensure_attribute(kbase_config, "service-config.dynamic-service", "KBase Config") is not True:
             error_exit('The KBase kb-sdk service must already be configured as a dynamic service')
 
         module_name = self.ensure_attribute(kbase_config, "module-name", "KBase Config")
 
-        feedback(f'✅ The service module "{module_name}" is indeed a dynamic service as well')
+        success_feedback(f'The service module "{module_name}" is indeed a dynamic service as well')
 
-        print(f'Module name        : {module_name}')
-        print(f'Module description : {self.ensure_attribute(kbase_config, "module-description", "KBase Config")}')
-        print(f'Service language   : {self.ensure_attribute(kbase_config, "service-language", "KBase Config")}')
-        print(f'Module version     : {self.ensure_attribute(kbase_config, "module-version", "KBase Config")}')
-        print(f'Owners             : {", ".join(self.ensure_attribute(kbase_config, "owners", "KBase Config"))}')
+        info_feedback(f'Module name        : {module_name}')
+        info_feedback(f'Module description : {self.ensure_attribute(kbase_config, "module-description", "KBase Config")}')
+        info_feedback(f'Service language   : {self.ensure_attribute(kbase_config, "service-language", "KBase Config")}')
+        info_feedback(f'Module version     : {self.ensure_attribute(kbase_config, "module-version", "KBase Config")}')
+        info_feedback(f'Owners             : {", ".join(self.ensure_attribute(kbase_config, "owners", "KBase Config"))}')
         self.sdk_module_name = kbase_config['module-name']
         self.checked = True
 
@@ -125,14 +125,9 @@ class WidgetSupport(object):
         server_file_replaced = []
         for line in server_file_lines:
             if line.startswith('DEPLOY ='):
-                print('------')
-                print('IMPORT LINE')
-                print(import_snippet)
-                print('-------')
                 server_file_replaced.append(import_snippet)
                 server_file_replaced.append(line)
             elif line.startswith('    def __call__(self, environ, start_response):'):
-                print('HANDLER LINE')
                 server_file_replaced.append(line)
                 server_file_replaced.append(handler_snippet)
             else:
@@ -148,7 +143,7 @@ class WidgetSupport(object):
         with open(server_file_path, "w", encoding="utf-8") as fout:
             fout.write(new_server_file_contents)
 
-        feedback('✅ Server snippets added')
+        success_feedback('Server snippets added')
 
 
     def sdk_python_placeholder(self, placeholder):
@@ -201,7 +196,7 @@ class WidgetSupport(object):
 
         impl_file_path.write_text(new_impl_file_contents, encoding="utf-8")
 
-        feedback('✅ Impl snippets added')
+        success_feedback('Impl snippets added')
 
 
     def add_gitignore_snippets(self):
@@ -233,7 +228,7 @@ class WidgetSupport(object):
 
         file_path.write_text(new_file_contents, encoding="utf-8")
 
-        feedback('✅ gitignore snippets added')
+        success_feedback('gitignore snippets added')
 
     def copy_docker_compose(self):
         # Read docker compose file
@@ -261,24 +256,21 @@ class WidgetSupport(object):
         source_dir = self.get_resource_dir('python-widget-support/widget')
         dest_dir = os.path.join(self.sdk_module_directory, 'lib', self.sdk_module_name, 'widget')
         shutil.copytree(source_dir, dest_dir)
-        feedback('✅ Python widget support copied')
+        success_feedback('Python widget support copied')
 
 
     def copy_docs(self):
         source_dir = self.get_resource_dir('docs')
         dest_dir = os.path.join(self.sdk_module_directory, 'docs')
         shutil.copytree(source_dir, dest_dir)
-        feedback('✅ Widget docs copied')
+        success_feedback('Widget docs copied')
 
 
     def copy_static_widget_support(self):
         source_dir = self.get_resource_dir('static-widget-support/widget')
         dest_dir = os.path.join(self.sdk_module_directory, 'widget')
-        feedback('Copying python support files')
-        feedback(f'From {source_dir}')
-        feedback(f'To {dest_dir}')
         shutil.copytree(source_dir, dest_dir)
-        feedback('✅ Static widget support copied')
+        success_feedback('Static widget support copied')
 
 
     def get_server_file_path(self):

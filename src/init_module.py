@@ -25,8 +25,8 @@ def main():
     )
 
     widget_support.ensure_valid_service()
-
     widget_support.add_widget_support()
+    print()
 
 
 if __name__ == '__main__':

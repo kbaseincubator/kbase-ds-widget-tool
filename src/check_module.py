@@ -24,6 +24,7 @@ def main():
     module_directory = sys.argv[1]
     widget_support = WidgetSupport(sdk_module_directory=module_directory)
     widget_support.ensure_valid_service()
+    print()
 
 
 if __name__ == "__main__":

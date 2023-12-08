@@ -244,17 +244,11 @@ Now we are ready to add widget support to the dynamic service!
 
     Analyzing module directory ...
 
-
     ✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!
-
-
     ✅ "kbase.yml" successfully loaded
-
-
     ❌ ERROR: Attribute service-config.dynamic-service expected in KBase Config but was not found.
 
     Exiting with code 1.
-
 
     Task completed in 0m0.469s
     ```
@@ -312,35 +306,13 @@ Now we are ready to add widget support to the dynamic service!
 
     ```shell
      % ./Taskfile check-module $$MODULE_DIR
+   
     Using service directory /Users/erikpearson/Work/KBase/2023/service-widget/practice/yourusernameSomeService
 
     Analyzing module directory ...
 
-
     ✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!
-
-
     ✅ "kbase.yml" successfully loaded
-
-
-    ❌ ERROR: Attribute service-config.dynamic-service expected in KBase Config but was not found.
-
-    Exiting with code 1.
-
-
-    Task completed in 0m0.498s
-    erikpearson@Eriks-MBP ds-widget-tool % ./Taskfile check-module $$MODULE_DIR
-    Using service directory /Users/erikpearson/Work/KBase/2023/service-widget/practice/yourusernameSomeService
-
-    Analyzing module directory ...
-
-
-    ✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!
-
-
-    ✅ "kbase.yml" successfully loaded
-
-
     ✅ The service module "yourusernameSomeService" is indeed a dynamic service as well
 
     Module name        : yourusernameSomeService
@@ -348,6 +320,7 @@ Now we are ready to add widget support to the dynamic service!
     Service language   : python
     Module version     : 0.0.1
     Owners             : yourusername
+
     Task completed in 0m0.535s
 
     ```
@@ -374,6 +347,32 @@ Now we are ready to add widget support to the dynamic service!
     ./Taskfile init-module $MODULE_DIR
     ```
 
+    If all goes well, you should see output like the following:
+
+    ```shell
+    ⓘ Analyzing module directory ...
+
+
+    ✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!
+    ✅ "kbase.yml" successfully loaded
+    ✅ The service module "yourusernameSomeService" is indeed a dynamic service as well
+
+    ⓘ Module name        : yourusernameSomeService
+    ⓘ Module description : A KBase module
+    ⓘ Service language   : python
+    ⓘ Module version     : 0.0.1
+    ⓘ Owners             : yourusername
+
+    ✅ Server snippets added
+    ✅ Impl snippets added
+    ✅ gitignore snippets added
+    ✅ Python widget support copied
+    ✅ Static widget support copied
+    ✅ Widget docs copied
+
+    Task completed in 0m0.673s
+
+    ```
 
 ## Start the service
 
