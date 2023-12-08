@@ -143,8 +143,12 @@ container.
     Then install the tool:
 
     ```shell
-    
+    git clone https://github.com/eapearson/ds-widget-tool
     ```
+
+2. Ensure the tool will work correctly
+
+    To ensure the tool will work
 
 1. Convert the app to a dynamic service
 

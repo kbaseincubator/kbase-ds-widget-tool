@@ -1,11 +1,11 @@
 import os
 import re
 import shutil
-import sys
 from datetime import datetime
 from pathlib import Path
 from string import Template
 
+from utils import error_exit, feedback
 from yaml import YAMLError, safe_load
 
 
@@ -14,24 +14,15 @@ class WidgetSupport(object):
         self.sdk_module_directory = sdk_module_directory
         self.checked = False
 
-    def feedback(self, message):
-        print()
-        print(message)
-        print()
-
-    def error_exit(self, message, exit_code = 1):
-        self.feedback(f'❌ ERROR: {message}\n\nExiting with code {exit_code}.\n')
-        sys.exit(exit_code)
-
     def ensure_attribute(self, data, name, label):
         attribs = name.split('.')
 
         if len(attribs) == 0:
-            self.error_exit(f"Attribute given for {label} cannot be empty.")
+            error_exit(f"Attribute given for {label} cannot be empty.")
 
         for attrib in attribs:
             if attrib not in data:
-                self.error_exit(f"Attribute {name} expected in {label} but was not found.")
+                error_exit(f"Attribute {name} expected in {label} but was not found.")
             data = data.get(attrib)
 
         return data
@@ -40,37 +31,37 @@ class WidgetSupport(object):
         """
         Ensures that the given directory implements a KBase kb-sdk dynamic service
         """
-        self.feedback('Analyzing module directory ...')
+        feedback('Analyzing module directory ...')
 
         # Determine if it is a directory
         if not os.path.isdir(self.sdk_module_directory):
-            self.error_exit(f'The given directory "{self.sdk_module_directory}" does not exist')
+            error_exit(f'The given directory "{self.sdk_module_directory}" does not exist')
 
         # See if it is probably a module directory.
         # We do that by looking for the "kbase.yml" file, with the proper structure.
         # Ideally we don't want it to be touched yet, but it is okay if it is.
         kbase_config_file = Path(os.path.join(self.sdk_module_directory, 'kbase.yml'))
         if not kbase_config_file.is_file():
-            self.error_exit(f'The KBase module config file "kbase.yml" was not found in the module directory {self.sdk_module_directory}: {kbase_config_file.resolve()}')
+            error_exit(f'The KBase module config file "kbase.yml" was not found in the module directory {self.sdk_module_directory}: {kbase_config_file.resolve()}')
 
-        self.feedback('✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!')
+        feedback('✅ "kbase.yml" config file found, it looks like a KBase kb-sdk service!')
 
         try:
             with open(kbase_config_file, "r", encoding="utf-8") as fin:
                 kbase_config = safe_load(fin)
         except OSError as oserr:
-            self.error_exit(f"Error opening or reading kbase config file: {str(oserr)}")
+            error_exit(f"Error opening or reading kbase config file: {str(oserr)}")
         except YAMLError as yerr:
-            self.error_exit(f"Error parsing config file as YAML: {str(yerr)}")
+            error_exit(f"Error parsing config file as YAML: {str(yerr)}")
 
-        self.feedback('✅ "kbase.yml" successfully loaded')
+        feedback('✅ "kbase.yml" successfully loaded')
 
         if self.ensure_attribute(kbase_config, "service-config.dynamic-service", "KBase Config") is not True:
-            self.error_exit('The KBase kb-sdk service must already be configured as a dynamic service')
+            error_exit('The KBase kb-sdk service must already be configured as a dynamic service')
 
         module_name = self.ensure_attribute(kbase_config, "module-name", "KBase Config")
 
-        self.feedback(f'✅ The service module "{module_name}" is indeed a dynamic service as well')
+        feedback(f'✅ The service module "{module_name}" is indeed a dynamic service as well')
 
         print(f'Module name        : {module_name}')
         print(f'Module description : {self.ensure_attribute(kbase_config, "module-description", "KBase Config")}')
@@ -83,20 +74,20 @@ class WidgetSupport(object):
 
     def assert_has_been_checked(self):
         if self.checked is not True:
-            self.error_exit('Must ensure the target directory is a valid SDK Dynamic Service before processing it.')
+            error_exit('Must ensure the target directory is a valid SDK Dynamic Service before processing it.')
 
     def get_resources_path(self):
         current_dir = os.path.dirname(os.path.realpath(__file__))
         path = os.path.join(current_dir, '../resources')
         if not os.path.isdir(path):
-            self.error_exit('The resources directory was not found')
+            error_exit('The resources directory was not found')
         return path
 
     def get_resource_dir(self, dir_path):
         resources_path = self.get_resources_path()
         dir_path = os.path.join(resources_path, dir_path)
         if not os.path.isdir(dir_path):
-            self.error_exit(f'The directory {dir_path} does not exist')
+            error_exit(f'The directory {dir_path} does not exist') 
         return dir_path
 
 
@@ -121,7 +112,7 @@ class WidgetSupport(object):
         server_filename = f"{self.sdk_module_name}Server.py"
         server_file_path = os.path.join(self.sdk_module_directory, 'lib', self.sdk_module_name, server_filename)
         if not os.path.isfile(server_file_path):
-            self.error_exit(f'Could not find module server file: {server_file_path}')
+            error_exit(f'Could not find module server file: {server_file_path}')
 
         with open(server_file_path, "r", encoding="utf-8") as fin:
             server_file_lines = fin.read().split('\n')
@@ -156,7 +147,7 @@ class WidgetSupport(object):
         with open(server_file_path, "w", encoding="utf-8") as fout:
             fout.write(new_server_file_contents)
 
-        self.feedback('✅ Server snippets added')
+        feedback('✅ Server snippets added')
 
 
     def sdk_python_placeholder(self, placeholder):
@@ -181,7 +172,7 @@ class WidgetSupport(object):
         impl_filename = f"{self.sdk_module_name}Impl.py"
         impl_file_path = Path(os.path.join(self.sdk_module_directory, 'lib', self.sdk_module_name, impl_filename))
         if not impl_file_path.is_file():
-            self.error_exit(f'Could not find module impl file: {impl_file_path.resolve()}')
+            error_exit(f'Could not find module impl file: {impl_file_path.resolve()}')
 
         impl_file_lines = impl_file_path.read_text(encoding='utf-8').split('\n')
 
@@ -209,7 +200,7 @@ class WidgetSupport(object):
 
         impl_file_path.write_text(new_impl_file_contents, encoding="utf-8")
 
-        self.feedback('✅ Impl snippets added')
+        feedback('✅ Impl snippets added')
 
 
     def add_gitignore_snippets(self):
@@ -226,7 +217,7 @@ class WidgetSupport(object):
 
         file_path = Path(os.path.join(self.sdk_module_directory, gitignore_filename))
         if not file_path.is_file():
-            self.error_exit(f'Could not find gitignore file: {file_path.resolve()}')
+            error_exit(f'Could not find gitignore file: {file_path.resolve()}')
 
         file_lines = file_path.read_text(encoding='utf-8').split('\n')
 
@@ -241,7 +232,7 @@ class WidgetSupport(object):
 
         file_path.write_text(new_file_contents, encoding="utf-8")
 
-        self.feedback('✅ gitignore snippets added')
+        feedback('✅ gitignore snippets added')
 
     def copy_docker_compose(self):
         # Read docker compose file
@@ -269,35 +260,35 @@ class WidgetSupport(object):
         source_dir = self.get_resource_dir('python-widget-support/widget')
         dest_dir = os.path.join(self.sdk_module_directory, 'lib', self.sdk_module_name, 'widget')
         shutil.copytree(source_dir, dest_dir)
-        self.feedback('✅ Python widget support copied')
+        feedback('✅ Python widget support copied')
 
 
     def copy_docs(self):
         source_dir = self.get_resource_dir('docs')
         dest_dir = os.path.join(self.sdk_module_directory, 'docs')
         shutil.copytree(source_dir, dest_dir)
-        self.feedback('✅ Widget docs copied')
+        feedback('✅ Widget docs copied')
 
 
     def copy_static_widget_support(self):
         source_dir = self.get_resource_dir('static-widget-support/widget')
         dest_dir = os.path.join(self.sdk_module_directory, 'widget')
-        self.feedback('Copying python support files')
-        self.feedback(f'From {source_dir}')
-        self.feedback(f'To {dest_dir}')
+        feedback('Copying python support files')
+        feedback(f'From {source_dir}')
+        feedback(f'To {dest_dir}')
         shutil.copytree(source_dir, dest_dir)
-        self.feedback('✅ Static widget support copied')
+        feedback('✅ Static widget support copied')
 
 
     def get_server_file_path(self):
         server_filename = f"{self.sdk_module_name}Server.py"
-        server_file_path = os.path.join(self.sdk_module_dir, 'lib', self.sdk_module_name, server_filename)
+        server_file_path = os.path.join(self.sdk_module_directory, 'lib', self.sdk_module_name, server_filename)
         return server_file_path
 
     def get_server_file(self):
         server_file_path = self.get_server_file_path()
         if not os.path.isfile(server_file_path):
-            self.error_exit(f'Could not find module server file: {server_file_path}')
+            error_exit(f'Could not find module server file: {server_file_path}')
         with open(server_file_path, "r", encoding="utf-8") as fin:
             return fin.read()
 
@@ -312,13 +303,13 @@ class WidgetSupport(object):
             fout.write(new_server_file_contents)
 
     def get_service_file_path(self, relative_file_path):
-        server_file_path = os.path.join(self.sdk_module_director, 'lib', self.sdk_module_name, relative_file_path)
+        server_file_path = os.path.join(self.sdk_module_directory, 'lib', self.sdk_module_name, relative_file_path)
         return server_file_path
 
     def get_service_file(self, relative_file_path):
         file_path = self.get_service_file_path(relative_file_path)
         if not os.path.isfile(file_path):
-            self.error_exit(f'Could not find module file: {file_path}')
+            error_exit(f'Could not find module file: {file_path}')
         with open(file_path, "r", encoding="utf-8") as fin:
             return fin.read()
 
@@ -341,7 +332,7 @@ class WidgetSupport(object):
     def get_test_file(self, relative_file_path):
         file_path = self.get_test_file_path(relative_file_path)
         if not os.path.isfile(file_path):
-            self.error_exit(f'Could not find module file: {file_path}')
+            error_exit(f'Could not find module file: {file_path}')
         with open(file_path, "r", encoding="utf-8") as fin:
             return fin.read()
 

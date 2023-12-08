@@ -44,11 +44,16 @@ function shell {
     if [ ! -d "${1}" ] 
     then
         echo "Error: The given service directory '${1}' is not a valid directory"
-        echo "Usage: ./Taskfile init-module SERVICE_DIR"
+        echo "Usage: ./Taskfile shell SERVICE_DIR"
         exit 1
     fi
     echo "Using service directory ${1}"
     docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool bash
+}
+
+
+function status {
+    docker compose run --rm ds-widget-tool "python src/status.py"
 }
 
 function help {

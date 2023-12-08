@@ -1,5 +1,4 @@
-"""A module whose purpose is to allow one to verify that a given directory is a KBase
-Dynamic Service"""
+"""A module whose purpose is to allow one to verify that a given directory is a KBase Dynamic Service"""
 
 import sys
 
@@ -7,10 +6,10 @@ from ds_widget_tool.widget_support import WidgetSupport
 
 
 def usage():
-    print('check MODULE-DIRECTORY')
-    print('')
-    print('Check that the given directory is a valid KBase SDK Dynamic Service ')
-    print('')
+    print("check MODULE-DIRECTORY")
+    print("")
+    print("Check that the given directory is a valid KBase SDK Dynamic Service ")
+    print("")
 
 
 def main():
@@ -27,5 +26,5 @@ def main():
     widget_support.ensure_valid_service()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
