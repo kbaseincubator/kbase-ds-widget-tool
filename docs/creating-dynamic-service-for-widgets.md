@@ -12,8 +12,16 @@ documentation](https://kbase.github.io/kb_sdk_docs).
 
 ## Prerequisites
 
-Since all tools run in docker containers, you will need docker installed on your
-machine. On macOS or Windows [Docker Desktop](https://www.docker.com/products/docker-desktop/) is a great, easy choice.
+Since all tools run in docker containers, you will need `docker` installed on your
+machine. On macOS or Windows [Docker
+Desktop](https://www.docker.com/products/docker-desktop/) is a great, easy choice.
+
+In addition, the `make` utility is required. This is ubiquitous on Linux, BSD, macOS,
+and is available on Windows as well.
+
+In this document each instruction step's title will be followed by the context,
+usually a directory, in which the task will be carried out. Otherwise, I sense the
+instructions may be confusing, as we utilize 3 different directories.
 
 ## A. Create a kb-sdk dynamic service
 
@@ -32,7 +40,7 @@ modifies the process to fit this tutorial.
     cd myproject
     ```
 
-2. Create a local copy of the kb-sdk tool:
+2. Create a local copy of the kb-sdk tool (`myproject`):
 
     > The upstream instructions specify to install this tool globally, but we'll just
     > use it locally for this tutorial, in order to be less intrusive in your system.
@@ -48,7 +56,7 @@ modifies the process to fit this tutorial.
     > The `PATH` configuration is necessary because the `Makefile` assumes that `kb-sdk`
     > is in the search path
 
-3. Initialize your new service
+3. Initialize your new service (`myproject`)
 
     Here we use the `kb-sdk` tool set up above to create and populate a KBase "module".
 
@@ -70,7 +78,7 @@ modifies the process to fit this tutorial.
     > In practice, I've not seen many people do this - in this case they would simply
     > use `SomeService`.
 
-4. Next we'll set up git and make the first commit.
+4. Next we'll set up git and make the first commit (`myproject/yourusernameSomeService`).
 
 
     ```shell
@@ -87,7 +95,7 @@ modifies the process to fit this tutorial.
     > `yourusernameSomeService` directory; you may then easily see the effects of each
     > step we are carrying out, without issuing any git commands.
 
-5. Next, run all service preparation steps in one fell swoop
+5. Next, run all service preparation steps in one fell swoop (`myproject/yourusernameSomeService`)
 
     ```shell
     make all
@@ -109,7 +117,7 @@ modifies the process to fit this tutorial.
     ?? test/run_tests.sh
     ```
 
-6. Commit the changes again
+6. Commit the changes again (`myproject/yourusernameSomeService`)
 
     Let's commit the files changed or added by `make all`, so that when we add widget
     support we can inspect all the files added.
@@ -127,7 +135,7 @@ modifies the process to fit this tutorial.
 
     The output shows that we are on the `main` branch, and there are no changed files listed.
 
-## B. Get the Dynamic Service Widget Tool `ds-widget-tool`
+## B. Get the Dynamic Service Widget Tool (`myproject`)
 
 Before we continue to convert this KBase service module into a dynamic service with
 widgets, let us get familiar with the tool we'll be using.
@@ -135,7 +143,7 @@ widgets, let us get familiar with the tool we'll be using.
 This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar to
 `kb-sdk`, runs as a docker container.
 
-1. Obtain a copy of the tool
+1. Obtain a copy of the tool (`myproject`)
 
     To get started, we'll install a copy of the `ds-widget-tool` locally. At present, it cannot be
     run remotely, but must be installed locally.
@@ -159,7 +167,7 @@ This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar 
     git clone https://github.com/eapearson/ds-widget-tool
     ```
 
-2. Ensure the tool will work correctly
+2. Ensure the tool will work correctly (`myproject/ds-widget-tool`)
 
     For convenience, we'll be running the commands inside the ds-widget-tool directory:
 
@@ -212,7 +220,7 @@ This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar 
 
 Now we are ready to add widget support to the dynamic service!
 
-1. Verify the module
+1. Verify the module (`myproject/ds-widget-tool`)
 
     Our first step is to ensure that the KBase SDK service module is ready to receive
     widget support. To do this, we run the `check-module` command, passing it the
@@ -273,7 +281,7 @@ Now we are ready to add widget support to the dynamic service!
     detects an error, it should print a message with the prefix `❌ ERROR:`, and then
     exit the program with error code 1.
 
-2. Convert the app to a dynamic service
+2. Convert the app to a dynamic service (`myproject/yourusernameSomeService`)
 
     By default, the KBase SDK will create an "app", which differs from a "dynamic service"
     in that the app is run through the execution service, and the dynamic service is a live
@@ -314,7 +322,7 @@ Now we are ready to add widget support to the dynamic service!
 
     ```
 
-3. Run the `check-module` task again
+3. Run the `check-module` task again (`myproject/ds-widget-tool`)
 
     If you repeat the `check-module` task, you will hopefully find that it succeeds:
 
@@ -336,10 +344,9 @@ Now we are ready to add widget support to the dynamic service!
     Owners             : yourusername
 
     Task completed in 0m0.535s
-
     ```
 
-4. Commit the changes
+4. Commit the changes (`myproject/yourusernameSomeService`)
 
     Let's go ahead and commit those changes, so we can observe what is changed when we
     convert the codebase to support widgets.
@@ -350,7 +357,7 @@ Now we are ready to add widget support to the dynamic service!
     git add --all; git commit -m "Converted to dynamic service"
     ```
 
-5. Use the `init-module` task to upgrade the module
+5. Use the `init-module` task to upgrade the module (`myproject/ds-widget-tool`)
 
     Now we are ready to run the `init-module` task  to add the widget support to the module
     codebase.
@@ -387,7 +394,7 @@ Now we are ready to add widget support to the dynamic service!
     Task completed in 0m0.673s
     ```
 
-6. Start the service (`yourusernamesomeservice`)
+6. Start the service (`myproject/yourusernamesomeservice`)
 
     Next we'll start the service and make sure it is working.
 
@@ -509,7 +516,7 @@ Now we are ready to add widget support to the dynamic service!
 
     In this document we'll cover just two: the config widget, and the demos widget.
 
-8. The `config` widget
+8. The `config` widget (your browser)
 
     The config widget simply displays the contents of the service's configuration. This
     is a "Python widget", in that it is run as Python code that generates html.
@@ -522,7 +529,7 @@ Now we are ready to add widget support to the dynamic service!
 
     THe code for this widget resides in `src/widget/widgets/config`.
 
-9. The `demos` widget
+9. The `demos` widget (your browser)
 
     The demos widget is both a widget itself, and contains links to or other ways of
     accessing widgets.
