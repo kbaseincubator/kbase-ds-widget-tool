@@ -1,0 +1,23 @@
+.demo-page {
+    display: flex;
+    flex-direction: row;
+}
+
+.demo-page-nav-column {
+    display: block;
+    flex: 0 0 auto;
+    padding: 0.5rem;
+}
+
+.demo-page-nav-column .btn {
+    width: 100%;
+}
+
+.demo-page-nav-item {
+    margin-bottom: 1rem;
+}
+
+.demo-page-content-column {
+    display: block;
+    flex: 1 1 0;
+}

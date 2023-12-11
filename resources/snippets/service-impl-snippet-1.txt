@@ -45,11 +45,11 @@
             config = config  # widgets often need to access configuration
         ))
 
-        add_widget('demos', StaticWidget(
+        add_widget('demos', PythonWidget(
             service_module_name = module_name,  # TODO: maybe can just get this inside the class?
-            name = 'Demo of some demo widgets',  # Just for logging and feedback
-            path = 'demo',  # path within the python widgets directory, currently widget/widgets
+            name = 'Demos',  # Just for logging and feedback
+            widget_module_name = 'demos',  # path within the python widgets directory, currently widget/widgets
             config = config  # widgets often need to access configuration
-        ))        
+        ))      
         #
         # END DS-SERVICE-WIDGET-ADD-WIDGETS

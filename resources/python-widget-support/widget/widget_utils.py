@@ -123,9 +123,9 @@ class WidgetBase:
         # version, or the old python.
         # Note: this of course relies up on the standard kb-sdk directory layout, as
         # well as that established by Dynamic Service Widgets.
-        global_loader = FileSystemLoader(f"./lib/{self.service_module_name}/widget/widgets/templates")
+        global_loader = FileSystemLoader("./lib/widget/widgets/templates")
         widget_loader = FileSystemLoader(
-           f"./lib/{self.service_module_name}/widget/widgets/{self.widget_module_name}/templates"
+           f"./lib/widget/widgets/{self.widget_module_name}/templates"
         )
         loader = ChoiceLoader([widget_loader, global_loader])
         self.env = Environment(loader=loader)

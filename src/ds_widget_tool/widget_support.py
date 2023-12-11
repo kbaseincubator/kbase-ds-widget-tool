@@ -254,7 +254,7 @@ class WidgetSupport(object):
 
     def copy_python_widget_support(self):
         source_dir = self.get_resource_dir('python-widget-support/widget')
-        dest_dir = os.path.join(self.sdk_module_directory, 'lib', self.sdk_module_name, 'widget')
+        dest_dir = os.path.join(self.sdk_module_directory, 'lib', 'widget')
         shutil.copytree(source_dir, dest_dir)
         success_feedback('Python widget support copied')
 

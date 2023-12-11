@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from ..handler_utils import handle_static_file
 
@@ -24,11 +25,11 @@ class Assets(object):
         current_dir = os.path.dirname(os.path.realpath(__file__))
 
         # Create a root path for all file access for the widget root file and all assets.
-        root_path = os.path.abspath(os.path.join(current_dir, '../../../../widget', path))
+        root_path = Path(os.path.abspath(os.path.join(current_dir, '../../../widget', path)))
 
         # Ensure the widget exists.
-        if not os.path.isdir(root_path):
-            raise WidgetError(f"The assets path was not found: {root_path}")
+        if not root_path.is_dir():
+            raise WidgetError(f"The assets path was not found: {root_path.resolve()}")
 
         self.root_path = root_path
 
@@ -49,5 +50,3 @@ class Assets(object):
             return handle_static_file(self.root_path, rest_path)
 
         return handler(request_env)
-
-    

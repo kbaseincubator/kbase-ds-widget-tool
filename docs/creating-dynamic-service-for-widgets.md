@@ -45,6 +45,9 @@ modifies the process to fit this tutorial.
     export PATH=$PATH:${PWD}
     ```
 
+    > The `PATH` configuration is necessary because the `Makefile` assumes that `kb-sdk`
+    > is in the search path
+
 3. Initialize your new service
 
     Here we use the `kb-sdk` tool set up above to create and populate a KBase "module".
@@ -79,6 +82,10 @@ modifies the process to fit this tutorial.
 
     This will help you see the changes that are made to your service, beyond the initial
     setup, as we add widget support, and then add widgets.
+
+    > Tip: I would recommend opening your favorite IDE or git GUi for the
+    > `yourusernameSomeService` directory; you may then easily see the effects of each
+    > step we are carrying out, without issuing any git commands.
 
 5. Next, run all service preparation steps in one fell swoop
 
@@ -170,12 +177,13 @@ This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar 
     To find out more about them, either read the source
     for ./Taskfile or the docs located in 'docs/tasks.md'.
     Tasks:
-        1	alias-me
-        2	check-module
-        3	help
-        4	init-module
-        5	shell
-        6	status
+     1  alias-me
+     2  bash
+     3  check-module
+     4  help
+     5  init-module
+     6  shell
+     7  status
     Task completed in 0m0.009s
     ```
 
@@ -206,10 +214,10 @@ Now we are ready to add widget support to the dynamic service!
     directory of the service we wish to work with.
 
     ```shell
-    ./Taskfile check-module $$MODULE_DIR    
+    ./Taskfile check-module $MODULE_DIR    
     ```
 
-    where `$$MODULE_DIR` is the absolute path to the service module directory.
+    where `$MODULE_DIR` is the absolute path to the service module directory.
 
     You may use any means necessary to determine the absolute path to the directory, the
     simplest of which is probably to open a terminal in that directory, issue `pwd`, 
@@ -235,7 +243,8 @@ Now we are ready to add widget support to the dynamic service!
     ./Taskfile check-module $$MODULE_DIR
     ```
 
-    should work on most POSIX compliant systems.
+    should work on most POSIX compliant systems if `yourusernameSomeService` and
+    `ds-widget-tool` were placed in the same project directory (i.e. they are sibling directories.)
 
     In any case, you should see something like this:
 
@@ -506,7 +515,7 @@ Now we are ready to add widget support to the dynamic service!
 
     (substituting for port 5100 if you need to).
 
-    THe code for this widget resides in `src/widgets/config`.
+    THe code for this widget resides in `src/widget/widgets/config`.
 
 9. The `demos` widget
 
@@ -519,7 +528,7 @@ Now we are ready to add widget support to the dynamic service!
 
     (substituting for port 5100 if you need to).
 
-    THe code for this widget resides in `src/widgets/demos`.
+    THe code for this widget resides in `src/widget/widgets/demos`.
 
 
 

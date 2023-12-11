@@ -22,15 +22,13 @@ def handle_static_file(container_path, resource_path):
     """
 
     #
-    if not os.path.isdir(container_path):
+    if not container_path.is_dir():
         response_status = '404 Not Found'
         response_content_type = 'text/plain; charset=utf-8'
         response_content = f"The container for the resource does not exist: {container_path}"
         return (response_status, response_content_type, response_content.encode('utf-8'))
 
-    resource = Path(os.path.join(container_path, resource_path))
-
-    # full_path = resource.resolve()
+    resource = container_path.joinpath(resource_path)
 
     # TODO: ensure that the full path is within container path
 
@@ -56,10 +54,6 @@ def handle_static_file(container_path, resource_path):
         response_content_type = 'text/plain; charset=utf-8'
         response_content = f"The requested resource with extension {extension} is not supported"
         return (response_status, response_content_type, response_content.encode('utf-8'))
-
-    # Otherwise, we serve up the precise file.
-    # with open(full_path, mode="rb") as fin:
-    #     response_content = fin.read()
 
     response_content = resource.read_bytes()
 

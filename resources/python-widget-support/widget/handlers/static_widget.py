@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from ..handler_utils import handle_static_file
 
@@ -23,8 +24,13 @@ class StaticWidget(object):
 
         current_dir = os.path.dirname(os.path.realpath(__file__))
 
-        # Create a root path for all file access for the widget root file and all assets.
-        widget_path = os.path.abspath(os.path.join(current_dir, '../../../../widget/widgets',  path))
+        # Create a root path for all file access for the widget root file and all
+        # assets.
+        
+        widgets_path = Path(os.path.join(current_dir, '../../../widget/widgets'))
+        widget_path = widgets_path.joinpath(path)
+        
+        # os.path.abspath(os.path.join(current_dir, '../../../widget/widgets',  path))
 
         # Ensure the widget exists.
         if not os.path.isdir(widget_path):

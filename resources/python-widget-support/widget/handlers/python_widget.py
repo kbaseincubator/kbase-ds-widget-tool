@@ -14,7 +14,7 @@ class PythonWidget(object):
         self.config = config
         self.widget_module_name = widget_module_name
 
-        self.widget_mod = importlib.import_module(f"{service_module_name}.widget.widgets.{widget_module_name}.widget")
+        self.widget_mod = importlib.import_module(f"widget.widgets.{widget_module_name}.widget")
 
         # current_dir = os.path.dirname(os.path.realpath(__file__))
 
