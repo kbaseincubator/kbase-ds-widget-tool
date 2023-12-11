@@ -144,7 +144,12 @@ This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar 
 
     ```shell
     cd ..
-    ls
+    ```
+
+    The contents of this directory should be:
+
+    ```shell
+    % ls
     kb-sdk			yourusernameSomeService
     ```
 
@@ -239,8 +244,8 @@ Now we are ready to add widget support to the dynamic service!
     or
 
     ```shell
-    export $MODULE_DIR=$(find $(cd ..; pwd) -maxdepth 1 -name yourusernameSomeService)
-    ./Taskfile check-module $$MODULE_DIR
+    export MODULE_DIR=$(find $(cd ..; pwd) -maxdepth 1 -name yourusernameSomeService)
+    ./Taskfile check-module $MODULE_DIR
     ```
 
     should work on most POSIX compliant systems if `yourusernameSomeService` and
@@ -382,7 +387,7 @@ Now we are ready to add widget support to the dynamic service!
     Task completed in 0m0.673s
     ```
 
-6. Start the service
+6. Start the service (`yourusernamesomeservice`)
 
     Next we'll start the service and make sure it is working.
 
@@ -397,8 +402,8 @@ Now we are ready to add widget support to the dynamic service!
     Note that the service module name has been converted to lower case; this is a
     requirement for docker.
 
-    If docker compose fails due to the port already being allocated, set the `PORT`
-    environment variable first, like:
+    If docker compose fails due to port 5100 already being allocated, set the `PORT`
+    environment variable first. E.g. the following starts the container using port 5200:
 
     ```shell
     PORT=5200 docker compose run --service-ports yourusernamesomeservice bash
@@ -528,8 +533,18 @@ Now we are ready to add widget support to the dynamic service!
 
     (substituting for port 5100 if you need to).
 
-    THe code for this widget resides in `src/widget/widgets/demos`.
+    The code for this widget resides in `src/widget/widgets/demos`.
 
+
+## Anatomy of the Widget Support
+
+Now that we've converted the service module to a dynamic service that supports widgets,
+let's explore how this was accomplished.
+
+Fortunately we had a fresh git status before the changes, so we can list all of the
+files.
+
+> TODO: write this section.
 
 
 ## Notes
@@ -550,7 +565,7 @@ self.callback_url = os.environ['SDK_CALLBACK_URL']
 
 A direct dict attribute reference like this will fail if the attribute does not exist.
 
-The documentation instructs to modify the codebase to avoidthis problem. However, there
+The documentation instructs to modify the codebase to avoid this problem. However, there
 are several parts of the codebase that are affected by this. That code is not run into
 when in dynamic service mode, but the missing environment variable is a problem easily
 resolved by setting it to an empty string, which is what the instructions above provide.
