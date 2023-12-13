@@ -489,6 +489,79 @@ Now we are ready to add widget support to the dynamic service!
 
 > TODO, or out of scope? I think at least a brief doc would be useful
 
+- commit all the changes:
+
+    ```shell
+    git add --all; git commit -m "Added widget support"
+    ```
+
+- create re
+po at github
+- copy remote command
+- add as remote in the service dir
+- push to repo
+- go to the catalog new registration page [https://ci.kbase.us/legacy/catalog/register](https://ci.kbase.us/legacy/catalog/register)
+- visit the repo, copy the url of the repo
+- paste the repo url into the catalog registration page
+- register
+
+- verify it is up:
+
+```shell
+curl -X POST https://ci.kbase.us/services/service_wizard/rpc \
+    -H 'Accept: application/json' \
+    -H 'Content-Type: application/json' \
+    -d '{
+    "version": "1.1",
+    "id": "123",
+    "method": "ServiceWizard.get_service_status",
+    "params": [{"module_name": "eapearsonWidgetTest10", "version": "dev"}]
+}'
+```
+
+- Copy the url from the result:
+
+```json
+{
+    "version": "1.1",
+    "result": [
+        {
+            "git_commit_hash": "e1f05e7c6555f6de25a20d27ebe1a2e48f983ad0",
+            "status": "active",
+            "version": "0.0.1",
+            "hash": "e1f05e7c6555f6de25a20d27ebe1a2e48f983ad0",
+            "release_tags": [
+                "dev"
+            ],
+            "url": "https://ci.kbase.us:443/dynserv/e1f05e7c6555f6de25a20d27ebe1a2e48f983ad0.eapearsonWidgetTest10",
+            "module_name": "eapearsonWidgetTest10",
+            "health": "healthy",
+            "up": 1
+        }
+    ],
+    "id": "123"
+}
+```
+
+- Invoke the status endpoint to make sure it is working:
+
+```shell
+curl -X POST https://ci.kbase.us:443/dynserv/e1f05e7c6555f6de25a20d27ebe1a2e48f983ad0.eapearsonWidgetTest10 \
+    -d '{"version": "1.1", "id": "123", "method": "eapearsonWidgetTest10.status", "params": []}'
+```
+
+- Invoke the config widget in a browser:
+
+```url
+https://ci.kbase.us:443/dynserv/e1f05e7c6555f6de25a20d27ebe1a2e48f983ad0.eapearsonWidgetTest10/widgets/config
+```
+
+- Invoke the demos widget in a browser
+
+```url
+https://ci.kbase.us:443/dynserv/e1f05e7c6555f6de25a20d27ebe1a2e48f983ad0.eapearsonWidgetTest10/widgets/demos
+```
+
 ## Anatomy of the Widget Support
 
 Now that we've converted the service module to a dynamic service that supports widgets,
