@@ -1,0 +1,4 @@
+	# Insert the Dynamic Server Widget code into the server file
+	# BEGIN DS-WIDGET COMPILE-FIX
+	./widget/scripts/fix-server-file.sh "${SERVICE_CAPS}"
+	# END DS-WIDGET COMPILE-FIX

@@ -8,11 +8,14 @@ class WidgetError(Exception):
 
 
 class PythonWidget(object):
-    def __init__(self, service_module_name, name, config, widget_module_name):
+    def __init__(self, service_module_name, name, config, widget_config, widget_module_name, title, path):
         self.service_module_name = service_module_name
         self.name = name
+        self.title = title
         self.config = config
         self.widget_module_name = widget_module_name
+        self.widget_config = widget_config
+        self.path = path
 
         self.widget_mod = importlib.import_module(f"widget.widgets.{widget_module_name}.widget")
 
@@ -68,7 +71,8 @@ class PythonWidget(object):
                 token=token, 
                 params=params, 
                 rest_path=rest_path, 
-                config=self.config)
+                config=self.config,
+                widget_config=self.widget_config)
 
             content = widget.render()
 

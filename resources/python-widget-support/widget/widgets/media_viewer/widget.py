@@ -1,3 +1,5 @@
+import os
+
 from installed_clients.WorkspaceClient import Workspace
 
 from ...widget_utils import (WidgetBase, WidgetError, object_info_to_dict,
@@ -49,5 +51,9 @@ class Widget(WidgetBase):
             'token': self.token, 
             'object_info': object_info, 
             'workspace_info': workspace_info, 
-            'media_object': media_object
+            'media_object': media_object,
+            'ui_origin': self.widget_config.get('ui_origin'),
+            'base_path': self.widget_config.get('base_path'),
+            'asset_url': self.get_asset_url(),
+            'widget_asset_url': self.get_widget_asset_url()
         }

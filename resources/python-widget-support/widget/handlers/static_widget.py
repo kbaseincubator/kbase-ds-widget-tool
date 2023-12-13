@@ -16,11 +16,13 @@ class WidgetError(Exception):
 
 
 class StaticWidget(object):
-    def __init__(self, service_module_name, name, config, path):
+    def __init__(self, service_module_name, name, config, widget_config, path, title):
         self.service_module_name = service_module_name
         self.name = name
+        self.title = title
         self.config = config
         self.path = path
+        self.widget_config = widget_config
 
         current_dir = os.path.dirname(os.path.realpath(__file__))
 

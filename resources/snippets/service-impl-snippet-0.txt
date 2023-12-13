@@ -1,9 +1,6 @@
 # BEGIN DS-SERVICE-WIDGET-IMPORT
 # Injected by the Dynamic Service Widget Tool
 #
-from widget.handlers.assets import Assets
-from widget.handlers.python_widget import PythonWidget
-from widget.handlers.static_widget import StaticWidget
-from widget.widget_handler import add_widget
+from widget.widget_handler import WidgetSupport, set_global_widget_support
 #
 # END DS-SERVICE-WIDGET-IMPORT

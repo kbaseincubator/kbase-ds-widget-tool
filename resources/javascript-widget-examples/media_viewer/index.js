@@ -144,13 +144,38 @@ const {ref, token, workspaceURL, uiOrigin} = (() => {
         })();
 
         // TODO: check the token... or just use it, and if it fails, deal with it.
+
+        // Construct a ui origin based on some assumptions.
+        // If the origin is ends with kbase.us, use it.
+        // Otherwise, assume local development and use ci.
+        const uiOrigin = (() => {
+            if (window.location.hostname.endsWith('kbase.us')) {
+                return window.location.origin;
+            } else {
+                return 'https://ci.kbase.us';
+            }
+        })();
+
+        // Construct a kbase endpoint base url based on the same assumptions as above,
+        // except that we use kbase.us for prod.
+        const kbaseEndpoint = (() => {
+            if (window.location.hostname.endsWith('kbase.us')) {
+                if (window.location.hostname.startsWith('narrative.')) {
+                    return `${window.location.origin}/services/`;
+                } else {
+                    return 'https://kbase.us/services/';
+                }
+            } else {
+                return 'https://ci.kbase.us/services/';
+            }
+        })();
+
        
-        const env = url.searchParams.get('env') || 'ci';
-        const uiOrigin =  `https://${env}.kbase.us`;
+        // const env = url.searchParams.get('env') || 'ci';
+        // const uiOrigin =  `https://${env}.kbase.us`;
 
-        const workspaceURL = `https://${env}.kbase.us/services/ws`;
+        const workspaceURL = `${kbaseEndpoint}ws`;
 
-        // const workspaceURL = 'https://ci.kbase.us/services/ws';
         return {ref, token, workspaceURL, uiOrigin};
     }
 })();
@@ -158,58 +183,14 @@ const {ref, token, workspaceURL, uiOrigin} = (() => {
 async function main(props) {
     try {
         await render(props)
-        $('#loading').hide();
-        $('#widget').show();
+        $('#loading').remove();
+        $('#widget').removeClass("d-none");
     } catch(ex) {
         console.error('ERROR', ex);
-        $('#loading').hide();
+        $('#loading').remove();
         $('#error-message').text(ex.message);
-        $('#error').show();
+        $('#error').removeClass("d-none");
     }
 }
 
 main({ ref, token, workspaceURL, uiOrigin });
-// THe code below requires that it be running from the narrative, inside
-// an iframe...
-// class MediaViewerRuntime extends WidgetRuntime {
-//     constructor() {
-//         super();
-
-//         // Initialize data table for the compounds table
-//         this.compoundsTable = new DataTable('#compounds-table', {
-//             paging: false,
-//             scrollCollapse: true,
-//             scrollY: 'auto',
-//             dom: '<"dataTablesOverride-top"if>t'
-//         });
-
-//         // A little hack to get the header to size correctly, as it is initially
-//         // sized within the hidden second tab.
-//         $('button[data-bs-toggle="tab"]').on('shown.bs.tab', (ev) => {
-//             this.widgetStateUpdated({
-//                 tab: ev.target.id
-//             });
-//             const id = ev.target.id;
-//             if (id !== 'compounds-tab') {
-//                 return;
-//             }
-//             this.compoundsTable.columns.adjust();
-//         });
-//     }
-
-//     start({authentication, config, params, state}) {
-//         // console.log('IN START!', state);
-//         // Select the tab, if set
-//         if ('tab' in state) {
-//             const tabId = state.tab;
-//             const $tab = $(`button[data-bs-toggle="tab"][id="${tabId}"]`);
-//             const tab = new bootstrap.Tab($tab);
-//             console.log('setting tab', tabId, $tab, tab)
-//             tab.show();
-//         }
-
-//         this.channel.send('set-title', {title: "{{ media_object.data.name }}"})
-//     }
-// }
-
-// const runtime = new MediaViewerRuntime();

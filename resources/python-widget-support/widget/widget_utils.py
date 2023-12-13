@@ -1,3 +1,5 @@
+import os
+
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
 
 
@@ -88,21 +90,21 @@ class WidgetBase:
     """
     Base behavior for Python Widgets
     """
-    def __init__(self, service_module_name, widget_module_name, token, params, rest_path, config):
+    def __init__(self, service_module_name, widget_module_name, token, params, rest_path, config, widget_config):
         # The module name for the service (directory name, first component of service
         # package path)
         self.service_module_name = service_module_name
 
         # The name of the widget's import path (or name) component within the widgets
         # package. The Python widgets package resides in
-        # SERVICE_MODULE_PACKAGE_NAME.widget.widgets, where SERVICE_MODULE_PACKAGE_NAME
-        # is the top level package name for the service package - and is usually the
-        # same as the service module name.
+        # widget.widgets
         # We need this value for dynamically constructing the file system loader for templates.
         self.widget_module_name = widget_module_name
 
         # Service config (from deploy.cfg)
         self.config = config
+
+        self.widget_config = widget_config
 
         # KBase auth token, as provided by the router
         self.token = token
@@ -172,3 +174,14 @@ class WidgetBase:
             }
             template = self.env.get_template("error.html")
             return template.render(context).encode("utf-8")
+
+    def get_base_path(self):
+       return self.widget_config.get('base_path')
+
+    def get_asset_url(self):
+       return os.path.join(self.widget_config.get('service_url'), 'widgets', 'assets')
+
+    def get_widget_asset_url(self):
+        return os.path.join(self.widget_config.get('service_url'), 'widgets', 'assets', self.widget_module_name)
+
+        

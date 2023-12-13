@@ -19,14 +19,6 @@ body {
     overflow-y: auto;
 }
 
-#error {
-    display: none;
-}
-
-#widget {
-    display: none;
-}
-
 #loading {
     display: block;
 }

@@ -28,7 +28,11 @@
                     Auth Token:
                 </div>
                 <div class="col-sm-10">
-                    <input name="auth-token" style="width: 20rem;">
+                    {% if widget_config.runtime_mode == "DEVELOPMENT" %}
+                    <input name="auth-token" style="width: 24rem;" value="{{ token }}">
+                    {% else %}
+                    <i>Using browser auth cookie: {{ token }}</i>
+                    {% endif %}
                 </div>
             </div>
             <div class="row mb-3">
@@ -47,13 +51,24 @@ border: 1px solid silver; padding: 1rem"></div>
 <script>
     document.querySelector('#media-viewer-py-form button[name="render"]').addEventListener("click", (e) => {
         const ref = document.querySelector('#media-viewer-py-form input[name="object-ref"]').value;
-        const token = document.querySelector('#media-viewer-py-form input[name="auth-token"]').value;
+        const token = (() => {
+            const token_field = document.querySelector('#media-viewer-py-form input[name="auth-token"]')
+            if (token_field) {
+                return token_field.value;
+            }
+            return null;
+        })();
+   
         if (ref.length === 0) {
             alert('Please enter a ref');
             return;
         }
 
-        const src = `/widgets/media_viewer_py?token=${token}&ref=${ref}`;
+        if (token) {
+            document.cookie = `kbase_session=${token};path=/`
+        }   
+
+        const src = `{{ widget_config.base_path }}/widgets/media_viewer_py?token=${token}&ref=${ref}`;
 
         const container = document.querySelector('#media-viewer-py-container');
 

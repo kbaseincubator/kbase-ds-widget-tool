@@ -30,256 +30,44 @@ instructions at https://kbase.github.io/kb_sdk_docs/tutorial/2_install.html, but
 modifies the process to fit this tutorial.
 
 1. Create or navigate to a project directory:
-
-    We'll be doing all of our work within a single project direcotry.
-
-    E.g.
-
     ```shell
     mkdir myproject
     cd myproject
     ```
 
 2. Create a local copy of the kb-sdk tool (`myproject`):
-
-    > The upstream instructions specify to install this tool globally, but we'll just
-    > use it locally for this tutorial, in order to be less intrusive in your system.
-    > You may, of course, choose to install it in a central location and modify your
-    > login profile to ensure it is always in your `PATH`.
-
     ```shell
     docker run kbase/kb-sdk genscript > ./kb-sdk
     chmod +x ./kb-sdk
     export PATH=$PATH:${PWD}
     ```
 
-    > The `PATH` configuration is necessary because the `Makefile` assumes that `kb-sdk`
-    > is in the search path
-
 3. Initialize your new service (`myproject`)
-
-    Here we use the `kb-sdk` tool set up above to create and populate a KBase "module".
-
     ```shell
-    kb-sdk init --verbose --language python --user yourusername yourusernameSomeService
-    ```
+    export KBASE_USERNAME="eapearson"
+    export SDK_MODULENAME="WidgetDemo7"
 
-    This creates a directory named after the module, `yourusernameSomeService`, and
-    populates it with the initial code for a KBase app or dynamic service.
-
-    If you were creating a real service, you would use your KBase username in place of
-    `yourusername `.
-
-    The final `yourusernameSomeService` is the name of the module. It is
-    recommended that this be a concatenation of your username and a sensible
-    name for the module, which in this case will be a dynamic service. This naming
-    scheme helps ensure that the module name is unique within KBase.
-
-    > In practice, I've not seen many people do this - they would simply name it use
-    > `SomeService`.
-
-4. Next we'll set up git and make the first commit (`myproject/yourusernameSomeService`).
-
-    ```shell
-    cd yourusernameSomeService
+    export SDK_MODULE="${KBASE_USERNAME}WidgetDemo7"
+    kb-sdk init --verbose --language python --user "${KBASE_USERNAME}" "${SDK_MODULE}"
+    cd ${SDK_MODULE}
     git init
     git add --all
     git commit -m "My first commit"
-    ```
-
-    This will help you see the changes that are made to your service, beyond the initial
-    setup, as we add widget support, and then add widgets.
-
-    > Tip: I would recommend opening your favorite IDE or git GUi for the
-    > `yourusernameSomeService` directory; you may then easily see the effects of each
-    > step we are carrying out, without issuing any git commands.
-
-5. Next, run all service preparation steps in one fell swoop (`myproject/yourusernameSomeService`)
-
-    ```shell
     make all
-    ```
-
-    That should have generated 7 files.
-
-    For example, we can now list the changes since the commit above:
-
-    ```shell
-    % git status  -bs
-    ## main
-    M lib/yourusernameSomeService/yourusernameSomeServiceImpl.py
-    M scripts/entrypoint.sh
-    ?? bin/
-    ?? lib/yourusernameSomeService/yourusernameSomeServiceImpl.py.bak-2023-12-07-18-42-21
-    ?? lib/yourusernameSomeService/yourusernameSomeServiceServer.py
-    ?? scripts/start_server.sh
-    ?? test/run_tests.sh
-    ```
-
-6. Commit the changes again (`myproject/yourusernameSomeService`)
-
-    Let's commit the files changed or added by `make all`, so that when we add widget
-    support we can inspect all the files added.
-
-    ```shell
     git add --all; git commit -m "Initialized service with 'make all'"
+    pwd | pbcopy
     ```
 
-    And now you should see a clean slate:
+## B. Update with the dynamic service widget tool (`myproject/ds-widget-tool`)
 
     ```shell
-    % git status  -bs
-    ## main
-    ```
-
-    The output shows that we are on the `main` branch, and there are no changed files listed.
-
-## B. Get the Dynamic Service Widget Tool (`myproject`)
-
-Before we continue to convert this KBase service module into a dynamic service with
-widgets, let us get familiar with the tool we'll be using.
-
-This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar to
-`kb-sdk`, runs as a docker container.
-
-1. Obtain a copy of the tool (`myproject`)
-
-    To get started, we'll install a copy of the `ds-widget-tool` locally. At present, it cannot be
-    run remotely, but must be installed locally.
-
-    First, navigate back to the project directory as we'll be installing the tool there.
-
-    ```shell
-    cd ..
-    ```
-
-    The contents of this directory should be:
-
-    ```shell
-    % ls
-    kb-sdk			yourusernameSomeService
-    ```
-
-    Then install the tool:
-
-    ```shell
-    git clone https://github.com/eapearson/ds-widget-tool
-    ```
-
-2. Ensure the tool will work correctly (`myproject/ds-widget-tool`)
-
-    For convenience, we'll be running the commands inside the ds-widget-tool directory:
-
-    ```shell
-    cd ds-widget-tool
-    ```
-
-    The tool works via a script named `Taskfile`, to which you will provide commands and parameters.
-
-    First, you can run the tool without any command to get a help screen which lists
-    available commands:
-
-    ```shell
-    ./Taskfile
-    ``
-
-    which prints
-
-    ```shell
-    To find out more about them, either read the source
-    for ./Taskfile or the docs located in 'docs/tasks.md'.
-    Tasks:
-     1  alias-me
-     2  bash
-     3  check-module
-     4  help
-     5  init-module
-     6  shell
-     7  status
-    Task completed in 0m0.009s
-    ```
-
-    To ensure the tool will work, run the `status` task, which will run the
-    `status.py` script within the container.
-
-    ```shell
-    ./Taskfile status
-    ```
-
-    You should see:
-
-    ```shell
-    This is the ds-widget-tool, a docker-based set of Python scripts
-    to help manage a KBase dynamic service with widgets.
-
-    See https://github.com/eapearson/ds-widget-tool.
-    ```
-
-## C. Add Widget Support to the Dynamic Service
-
-Now we are ready to add widget support to the dynamic service!
-
-1. Verify the module (`myproject/ds-widget-tool`)
-
-    Our first step is to ensure that the KBase SDK service module is ready to receive
-    widget support. To do this, we run the `check-module` command, passing it the
-    directory of the service we wish to work with.
-
-    ```shell
-    ./Taskfile check-module $MODULE_DIR    
-    ```
-
-    where `$MODULE_DIR` is the absolute path to the service module directory.
-
-    You may use any means necessary to determine the absolute path to the directory, the
-    simplest of which is probably to open a terminal in that directory, issue `pwd`, 
-    copy the result, and set the environment variable like so:
-
-    ```shell
-    export MODULE_DIR=/path/to/projectdir/yourusernameSomeService
-    ```
-
-    There are various clever ways of doing this on the command line, but many are not
-    universal across systems.
-
-    E.g. this
-
-    ```shell
-    ./Taskfile check-module $(find $(cd ..; pwd) -maxdepth 1 -name yourusernameSomeService)
-    ```
-
-    or
-
-    ```shell
-    export MODULE_DIR=$(find $(cd ..; pwd) -maxdepth 1 -name yourusernameSomeService)
+    export MODULE_DIR=$(pbpaste)
+    echo "${MODULE_DIR}"
     ./Taskfile check-module $MODULE_DIR
+    ./Taskfile init-module $MODULE_DIR
     ```
 
-    should work on most POSIX compliant systems if `yourusernameSomeService` and
-    `ds-widget-tool` were placed in the same project directory (i.e. they are sibling directories.)
-
-    In any case, you should see something like this:
-
-    ```shell
-     % ./Taskfile check-module $$MODULE_DIR
-   
-    Using service directory /Users/erikpearson/Work/KBase/2023/service-widget/practice/yourusernameSomeService
-
-    ⓘ Analyzing module directory ...
-
-    ✅ "kbase.yml" successfully loaded
-    ✅ The service module "eapearsonWidgetDemo7" is not a dynamic service and will need to be converted
-
-    ⓘ Module name        : eapearsonWidgetDemo7
-    ⓘ Module description : A KBase module
-    ⓘ Service language   : python
-    ⓘ Module version     : 0.0.1
-    ⓘ Owners             : eapearson
-
-    Task completed in 0m0.480s
-    ```
-
-2. Commit the changes (`myproject/yourusernameSomeService`)
+4. Commit the changes (`myproject/yourusernameSomeService`)
 
     Let's go ahead and commit those changes, so we can observe what is changed when we
     convert the codebase to support widgets.
@@ -290,48 +78,7 @@ Now we are ready to add widget support to the dynamic service!
     git add --all; git commit -m "Converted to dynamic service"
     ```
 
-3. Use the `init-module` task to upgrade the module (`myproject/ds-widget-tool`)
-
-    Now we are ready to run the `init-module` task  to add the widget support to the module
-    codebase.
-
-    Similar to when we checked the module, we issue the task in a terminal:
-
-    ```shell
-    ./Taskfile init-module $MODULE_DIR
-    ```
-
-    If all goes well, you should see output like the following:
-
-    ```shell
-    ⓘ Analyzing module directory ...
-
-    ✅ "kbase.yml" successfully loaded
-    ✅ The service module "eapearsonWidgetDemo7" is not a dynamic service and will need to be converted
-
-    ⓘ Module name        : eapearsonWidgetDemo7
-    ⓘ Module description : A KBase module
-    ⓘ Service language   : python
-    ⓘ Module version     : 0.0.1
-    ⓘ Owners             : eapearson
-
-    ✅ Module configured as dynamic service
-    ✅ Auth client imports fixed
-    ✅ Server snippets added
-    ✅ Test file repaired
-    ✅ Impl snippets added
-    ✅ gitignore snippets added
-    ✅ Docker compose copied
-    ✅ Python widget support copied
-    ✅ Static widget support copied
-    ✅ Widget docs copied
-    ✅ Fixed Makefile
-    ✅ Debugging suppport added to impl file
-
-    Task completed in 0m0.664s
-    ```
-
-4. Start the service (`myproject/yourusernameSomeService`)
+6. Start the service (`myproject/yourusernamesomeservice`)
 
     Next we'll start the service and make sure it is working.
 
@@ -364,6 +111,8 @@ Now we are ready to add widget support to the dynamic service!
     % python --version
     Python 3.6.3 :: Anaconda, Inc.
     ```
+
+    You can now start the server:
 
     ```shell
     DEV=t ./scripts/start_server.sh
@@ -449,13 +198,13 @@ Now we are ready to add widget support to the dynamic service!
     }
     ```
 
-5. Try out the demo widgets
+7. Try out the demo widgets
 
     The widget support package comes with some widget tools and also sample widgets.
 
     In this document we'll cover just two: the config widget, and the demos widget.
 
-6. The `config` widget (your browser)
+8. The `config` widget (your browser)
 
     The config widget simply displays the contents of the service's configuration. This
     is a "Python widget", in that it is run as Python code that generates html.
@@ -466,9 +215,9 @@ Now we are ready to add widget support to the dynamic service!
 
     (substituting for port 5100 if you need to).
 
-    THe code for this widget resides in `src/widget/widgets/config`.
+    The code for this widget resides in `src/widget/widgets/config`.
 
-7. The `demos` widget (your browser)
+9. The `demos` widget (your browser)
 
     The demos widget is both a widget itself, and contains links to or other ways of
     accessing widgets.
@@ -481,6 +230,7 @@ Now we are ready to add widget support to the dynamic service!
 
     The code for this widget resides in `src/widget/widgets/demos`.
 
+
 ## Anatomy of the Widget Support
 
 Now that we've converted the service module to a dynamic service that supports widgets,
@@ -490,6 +240,7 @@ Fortunately we had a fresh git status before the changes, so we can list all of 
 files.
 
 > TODO: write this section.
+
 
 ## Notes
 
@@ -501,7 +252,7 @@ the codebase that assume it is running as an app.
 The only one that causes a problem is that when the `SDK_CALLBACK_URL` is not set, the
 server will fail to start.
 
-The line of code looks something like:
+The line of code looks /something like:
 
 ```python
 self.callback_url = os.environ['SDK_CALLBACK_URL']

@@ -17,5 +17,4 @@ services:
     ports:
       - "$${PORT:-5100}:5000"
     environment:
-      - SDK_CALLBACK_URL
       - KBASE_ENDPOINT

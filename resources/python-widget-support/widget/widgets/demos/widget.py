@@ -6,5 +6,7 @@ class Widget(WidgetBase):
         demo = self.params['demo'][0] if 'demo' in self.params else None
         return {
             "config": self.config,
-            "demo": demo
+            "widget_config": self.widget_config,
+            "demo": demo,
+            "token": self.token
         }
