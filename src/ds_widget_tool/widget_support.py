@@ -122,7 +122,7 @@ class WidgetSupport(object):
         if self.get_attribute(kbase_config, 'service-config.dynamic-service'):
             success_feedback(f'The service module "{module_name}" is indeed a dynamic service as well')
         else:
-            success_feedback(f'The service module "{module_name}" is not a dynamic service and will need to be converted')
+            success_feedback(f'The service module "{module_name}" is not a dynamic service and will be converted')
 
         info_feedback(f'Module name        : {module_name}')
         info_feedback(f'Module description : {self.ensure_attribute(kbase_config, "module-description", "KBase Config")}')

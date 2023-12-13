@@ -60,28 +60,36 @@ modifies the process to fit this tutorial.
 
     Here we use the `kb-sdk` tool set up above to create and populate a KBase "module".
 
+    You can set up these environment variables in order to facilitate future commands.
+
     ```shell
-    kb-sdk init --verbose --language python --user yourusername yourusernameSomeService
+    export KBASE_USERNAME="yourusername"
+    export SDK_MODULENAME="YourModuleName"
     ```
 
-    This creates a directory named after the module, `yourusernameSomeService`, and
-    populates it with the initial code for a KBase app or dynamic service.
-
-    If you were creating a real service, you would use your KBase username in place of
-    `yourusername `.
-
-    The final `yourusernameSomeService` is the name of the module. It is
-    recommended that this be a concatenation of your username and a sensible
-    name for the module, which in this case will be a dynamic service. This naming
-    scheme helps ensure that the module name is unique within KBase.
-
-    > In practice, I've not seen many people do this - they would simply name it use
-    > `SomeService`.
-
-4. Next we'll set up git and make the first commit (`myproject/yourusernameSomeService`).
+    Then create the service with `kb-sdk`:
 
     ```shell
-    cd yourusernameSomeService
+    export SDK_MODULE="${KBASE_USERNAME}${SDK_MODULENAME}"
+    kb-sdk init --verbose --language python --user "${KBASE_USERNAME}" "${SDK_MODULE}"
+    ```
+
+    This creates a directory named after the module, `$SDK_MODULE`, and
+    populates it with the initial code for a KBase app or dynamic service. Note that:
+
+    - The service is implemented in `python`.
+    - the initial sole owner of the project is the user specified in `$KBASE_USERNAME`
+    - the name of the module is the concatenation of the username and a descriptive
+      module name. This naming scheme helps ensure that the module name is unique within
+      KBase. In this case it would be `yourusernameYourModuleName`.
+
+    > In practice, I've not seen many people do this - they would simply name it use
+    > `YourModuleName`, is it is briefer, less confusing, and naturally descriptive.
+
+4. Next we'll set up git and make the first commit (`myproject/${SDK_MODULE}`).
+
+    ```shell
+    cd "${SDK_MODULE}"
     git init
     git add --all
     git commit -m "My first commit"
@@ -91,10 +99,10 @@ modifies the process to fit this tutorial.
     setup, as we add widget support, and then add widgets.
 
     > Tip: I would recommend opening your favorite IDE or git GUi for the
-    > `yourusernameSomeService` directory; you may then easily see the effects of each
+    > `${SDK_MODULE}` directory; you may then easily see the effects of each
     > step we are carrying out, without issuing any git commands.
 
-5. Next, run all service preparation steps in one fell swoop (`myproject/yourusernameSomeService`)
+5. Next, run all service preparation steps in one fell swoop (`myproject/${SDK_MODULE}`)
 
     ```shell
     make all
@@ -107,16 +115,16 @@ modifies the process to fit this tutorial.
     ```shell
     % git status  -bs
     ## main
-    M lib/yourusernameSomeService/yourusernameSomeServiceImpl.py
+    M lib/yourusernameYourModuleName/yourusernameYourModuleNameeImpl.py
     M scripts/entrypoint.sh
     ?? bin/
-    ?? lib/yourusernameSomeService/yourusernameSomeServiceImpl.py.bak-2023-12-07-18-42-21
-    ?? lib/yourusernameSomeService/yourusernameSomeServiceServer.py
+    ?? lib/yourusernameYourModuleName/yourusernameYourModuleNameImpl.py.bak-2023-12-07-18-42-21
+    ?? lib/yourusernameYourModuleName/yourusernameYourModuleNameServer.py
     ?? scripts/start_server.sh
     ?? test/run_tests.sh
     ```
 
-6. Commit the changes again (`myproject/yourusernameSomeService`)
+6. Commit the changes again (`myproject/${SDK_MODULE}`)
 
     Let's commit the files changed or added by `make all`, so that when we add widget
     support we can inspect all the files added.
@@ -157,7 +165,7 @@ This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar 
 
     ```shell
     % ls
-    kb-sdk			yourusernameSomeService
+    kb-sdk			yourusernameYourModuleName
     ```
 
     Then install the tool:
@@ -236,7 +244,7 @@ Now we are ready to add widget support to the dynamic service!
     copy the result, and set the environment variable like so:
 
     ```shell
-    export MODULE_DIR=/path/to/projectdir/yourusernameSomeService
+    export MODULE_DIR=/path/to/projectdir/yourusernameYourModuleName
     ```
 
     There are various clever ways of doing this on the command line, but many are not
@@ -245,30 +253,30 @@ Now we are ready to add widget support to the dynamic service!
     E.g. this
 
     ```shell
-    ./Taskfile check-module $(find $(cd ..; pwd) -maxdepth 1 -name yourusernameSomeService)
+    ./Taskfile check-module $(find $(cd ..; pwd) -maxdepth 1 -name yourusernameYourModuleName)
     ```
 
     or
 
     ```shell
-    export MODULE_DIR=$(find $(cd ..; pwd) -maxdepth 1 -name yourusernameSomeService)
+    export MODULE_DIR=$(find $(cd ..; pwd) -maxdepth 1 -name yourusernameYourModuleName)
     ./Taskfile check-module $MODULE_DIR
     ```
 
-    should work on most POSIX compliant systems if `yourusernameSomeService` and
+    should work on most POSIX compliant systems if `yourusernameYourModuleName` and
     `ds-widget-tool` were placed in the same project directory (i.e. they are sibling directories.)
 
     In any case, you should see something like this:
 
     ```shell
-     % ./Taskfile check-module $$MODULE_DIR
+     % ./Taskfile check-module $MODULE_DIR
    
-    Using service directory /Users/erikpearson/Work/KBase/2023/service-widget/practice/yourusernameSomeService
+    Using service directory /Users/erikpearson/Work/KBase/2023/service-widget/practice/yourusernameYourModuleName
 
     ⓘ Analyzing module directory ...
 
     ✅ "kbase.yml" successfully loaded
-    ✅ The service module "eapearsonWidgetDemo7" is not a dynamic service and will need to be converted
+    ✅ The service module "eapearsonWidgetDemo7" is not a dynamic service and will be converted
 
     ⓘ Module name        : eapearsonWidgetDemo7
     ⓘ Module description : A KBase module
@@ -279,18 +287,7 @@ Now we are ready to add widget support to the dynamic service!
     Task completed in 0m0.480s
     ```
 
-2. Commit the changes (`myproject/yourusernameSomeService`)
-
-    Let's go ahead and commit those changes, so we can observe what is changed when we
-    convert the codebase to support widgets.
-
-    In the terminal whose current working directory is the service directory `yourusernameSomeService`:
-
-    ```shell
-    git add --all; git commit -m "Converted to dynamic service"
-    ```
-
-3. Use the `init-module` task to upgrade the module (`myproject/ds-widget-tool`)
+2. Use the `init-module` task to upgrade the module (`myproject/ds-widget-tool`)
 
     Now we are ready to run the `init-module` task  to add the widget support to the module
     codebase.
@@ -307,7 +304,7 @@ Now we are ready to add widget support to the dynamic service!
     ⓘ Analyzing module directory ...
 
     ✅ "kbase.yml" successfully loaded
-    ✅ The service module "eapearsonWidgetDemo7" is not a dynamic service and will need to be converted
+    ✅ The service module "eapearsonWidgetDemo7" is not a dynamic service and will be converted
 
     ⓘ Module name        : eapearsonWidgetDemo7
     ⓘ Module description : A KBase module
@@ -331,7 +328,7 @@ Now we are ready to add widget support to the dynamic service!
     Task completed in 0m0.664s
     ```
 
-4. Start the service (`myproject/yourusernameSomeService`)
+3. Start the service (`myproject/${MODULE_DIR}`)
 
     Next we'll start the service and make sure it is working.
 
@@ -339,17 +336,24 @@ Now we are ready to add widget support to the dynamic service!
 
     ```shell
     export KBASE_ENDPOINT=https://ci.kbase.us/services/ 
-    docker compose run --service-ports yourusernamesomeservice bash
+    docker compose run --service-ports yourusernameyourmodulename bash
     ```
 
     Note that the service module name has been converted to lower case; this is a
     requirement for docker.
 
+    A copy-pastable form without the hardcoded service name `yourusernameyourmodulename`
+    is:
+    
+    ```shell
+    docker compose run --service-ports $(echo "${SDK_MODULE}" | tr '[:upper:]' '[:lower:]') bash
+    ```
+
     If docker compose fails due to port 5100 already being allocated, set the `PORT`
     environment variable first. E.g. the following starts the container using port 5200:
 
     ```shell
-    PORT=5200 docker compose run --service-ports yourusernamesomeservice bash
+    PORT=5200 docker compose run --service-ports yourusernameyourmodulename bash
     ```
 
     This will leave you inside the service container on the bash shell command line.
@@ -380,7 +384,7 @@ Now we are ready to add widget support to the dynamic service!
     *** Starting uWSGI 2.0.17.1 (64bit) on [Fri Dec  8 18:39:47 2023] ***
     compiled with version: 4.8.2 20140120 (Red Hat 4.8.2-15) on 15 August 2018 17:45:24
     os: Linux-6.5.11-linuxkit #1 SMP PREEMPT_DYNAMIC Mon Dec  4 10:03:25 UTC 2023
-    nodename: yourusernamesomeservice
+    nodename: yourusernameyourmodulename
     machine: x86_64
     clock source: unix
     pcre jit disabled
@@ -428,7 +432,7 @@ Now we are ready to add widget support to the dynamic service!
 
     ```shell
     curl -X POST http://localhost:5100 \
-        -d '{"version": "1.1", "id": "123", "method": "yourusernameSomeService.status", "params": []}'
+        -d '{"version": "1.1", "id": "123", "method": "yourusernameYourModuleName.status", "params": []}'
     ```
 
     and you should get a response like this:
@@ -449,13 +453,13 @@ Now we are ready to add widget support to the dynamic service!
     }
     ```
 
-5. Try out the demo widgets
+4. Try out the demo widgets
 
     The widget support package comes with some widget tools and also sample widgets.
 
     In this document we'll cover just two: the config widget, and the demos widget.
 
-6. The `config` widget (your browser)
+5. The `config` widget (your browser)
 
     The config widget simply displays the contents of the service's configuration. This
     is a "Python widget", in that it is run as Python code that generates html.
@@ -468,7 +472,7 @@ Now we are ready to add widget support to the dynamic service!
 
     THe code for this widget resides in `src/widget/widgets/config`.
 
-7. The `demos` widget (your browser)
+6. The `demos` widget (your browser)
 
     The demos widget is both a widget itself, and contains links to or other ways of
     accessing widgets.
@@ -480,6 +484,10 @@ Now we are ready to add widget support to the dynamic service!
     (substituting for port 5100 if you need to).
 
     The code for this widget resides in `src/widget/widgets/demos`.
+
+## Registering your new dynamic service
+
+> TODO, or out of scope? I think at least a brief doc would be useful
 
 ## Anatomy of the Widget Support
 
