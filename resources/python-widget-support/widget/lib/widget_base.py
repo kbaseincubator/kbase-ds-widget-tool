@@ -1,89 +1,10 @@
 import os
+import re
 
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
-
-
-def object_info_to_dict(object_info):
-    [
-        object_id,
-        object_name,
-        type_id,
-        save_date,
-        version,
-        saved_by,
-        workspace_id,
-        workspace_name,
-        checksum,
-        size,
-        metadata,
-    ] = object_info
-
-    return {
-        'object_id': object_id,
-        'object_name': object_name,
-        'type_id': type_id,
-        'save_date': save_date,
-        'version': version,
-        'saved_by': saved_by,
-        'workspace_id': workspace_id,
-        'workspace_name': workspace_name,
-        'checksum': checksum,
-        'size': size,
-        'metadata': metadata,
-    }
-
-def workspace_info_to_dict(workspace_info):
-    [
-        workspace_id,
-        workspace_name,
-        owner,
-        modified_at,
-        max_object_id,
-        user_permission,
-        global_permission,
-        lock_status,
-        metadata,
-    ] = workspace_info
-
-    return {
-        'workspace_id': workspace_id,
-        'workspace_name': workspace_name,
-        'owner': owner,
-        'modified_at': modified_at,
-        'max_object_id': max_object_id,
-        'user_permission': user_permission,
-        'global_permission': global_permission,
-        'lock_status': lock_status,
-        'metadata': metadata,
-    }
-
-def get_param(params, key):
-    """ 
-    Safely gets a parameter from the dict created by parse_qs.
-
-    The parsed search params is not a straight dict, as the value is an array, to
-    accommodate multiple parameters (a rare case!).
-    """
-    value = params.get(key)
-    if value is None:
-        return None
-    if len(value) != 1:
-        return None
-    return value[0]
-
-class WidgetError(Exception):
-    def __init__(self, title, code, message):
-        super().__init__(message)
-        self.title = title
-        self.code = code
-        self.message = message
-
-    def get_context(self):
-        return {
-            "title": self.title,
-            "code": self.code,
-            "message": self.message
-        }
+from widget.lib.generic_client import GenericClient
+from widget.lib.widget_error import WidgetError
+from widget.lib.widget_utils import object_info_to_dict, workspace_info_to_dict
 
 
 class WidgetBase:
@@ -184,4 +105,53 @@ class WidgetBase:
     def get_widget_asset_url(self):
         return os.path.join(self.widget_config.get('service_url'), 'widgets', 'assets', self.widget_module_name)
 
-        
+    def get_object(self, ref, allowed_types):
+        workspace = GenericClient(
+            module_name='Workspace',
+            url = self.config.get('workspace-url'),
+            token = self.token,
+            timeout=10000
+        )
+        params = {
+            'includeMetadata': 1,
+            'objects': [{'ref': ref}]
+        }
+        try:
+            object_info = object_info_to_dict(workspace.call_func('get_object_info3', [params])[0]['infos'][0])
+        except WidgetError as werr:
+            raise werr
+        except Exception as ex:
+            raise WidgetError(
+                title="Error",
+                code="error-fetching-object",
+                message=str(ex)) from ex
+
+        if object_info['size'] > 1_000_000:
+            raise WidgetError(
+                title="Error",
+                code="file-too-big",
+                message=f"Object too big: {object_info['size']}")
+
+        type_module, type_name, _type_version_major, _type_version_minor = re.split(r'[.-]', object_info['type_id'])
+
+        type_id_versionless = '.'.join([type_module, type_name])
+
+        # if type_module != "KBaseStructure" and type_name != "ProteinStructures":
+        if type_id_versionless not in allowed_types:
+            raise WidgetError(
+                title="Error",
+                code="incorrect-type",
+                message=f"Expected an object of type KBaseStructure.ProteinStructures, but got {object_info['type_id']}"
+            )
+
+        workspace_id = object_info['workspace_id']
+
+        workspace_info = workspace_info_to_dict(workspace.call_func('get_workspace_info', [{"id": workspace_id}])[0])
+
+        params = {
+            'objects': [{'ref': ref}],
+            'infostruct': 1
+        }
+        data_object = workspace.call_func('get_objects2', [params])[0]['data'][0]
+
+        return [data_object, workspace_info]

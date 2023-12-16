@@ -1,6 +1,3 @@
-import os
-from pathlib import Path
-
 MEDIA_TYPE_MAPPING = {
     "html": "text/html",
     "text": "text/plain",

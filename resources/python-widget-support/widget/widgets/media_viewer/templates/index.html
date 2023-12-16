@@ -7,19 +7,20 @@
         <link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/sc-2.2.0/datatables.min.css" rel="stylesheet">
         <script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/sc-2.2.0/datatables.min.js"></script>
         <!-- <link href="{{ base_path }}/widgets/assets/style.css" rel="stylesheet"> -->
-        <script src="{{ asset_url }}js/lib.js"></script>
+        <script src="{{ asset_url }}/js/lib.js"></script>
         <link href="{{ widget_asset_url }}/style.css" rel="stylesheet">
     </head>
     <body>
         <ul class="nav nav-tabs" role="tablist" id="media-tabs">
+
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
-                    Overview
+                <button class="nav-link active" id="compounds-tab" data-bs-toggle="tab" data-bs-target="#compounds" type="button" role="tab" aria-controls="compounds" aria-selected="false">
+                    Media Compounds
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="compounds-tab" data-bs-toggle="tab" data-bs-target="#compounds" type="button" role="tab" aria-controls="compounds" aria-selected="false">
-                    Media Compounds
+                <button class="nav-link" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
+                    Overview
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -29,7 +30,68 @@
             </li>
         </ul>
         <div class="tab-content" id="media-tab-content">
-            <div class="tab-pane fade show active pt-3" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+            <div class="tab-pane fade show active pt-3 dataTablesOverride-ScrollingFlexFix" id="compounds" role="tabpanel" aria-labelledby="compounds-tab">
+                <table class="display table"  style="width: 100%" id="compounds-table">
+                    <thead>
+                        <tr>
+                            <th>Compound</th>
+                            <!-- <th>Compound Ref</th> -->
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Formula</th>
+                            <th>Charge</th>
+                            <th>Min uptake (mol/g CDW hr)</th>
+                            <th>Max uptake (mol/g CDW hr)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in media_object.data.mediacompounds %}
+                            <tr>
+                                <td>
+                                    {{ row.id or "<i>n/a</i>" }}
+                                </td>
+                                <!-- <td>
+                                    {{ row.compound_ref }}
+                                </td> -->
+                                <td>
+                                    <!--
+                                         Note that we handle a broken image, but modelseed will also show a
+                                         blank (white) image for some compounds; this is different than a
+                                         missing image
+                                     -->
+                                     {% if row.id is not none %}
+                                        <img class="compound-image"
+                                            src="https://minedatabase.mcs.anl.gov/compound_images/ModelSEED/{{ row.id }}.png"
+                                            alt="Image for compound '{{ row.id }}'"
+                                            style="width: 100px"
+                                            onerror="this.onerror=null;this.src='{{ asset_url }}/media_viewer/broken-image.png'"
+                                        >
+                                    {% else %}
+                                        <i>n/a</i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ row.name or "<i>n/a</i>" }}
+                                </td>
+                                <td>
+                                    {{ row.formula or "<i>n/a</i>" }}
+                                </td>
+                                <td>
+                                    {{ row.charge or "<i>n/a</i>" }}
+                                </td>
+                                <td>
+                                    {{ row.minFlux }}
+                                </td>
+                                <td>
+                                    {{ row.maxFlux }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="tab-pane fade pt-3" id="overview" role="tabpanel" aria-labelledby="overview-tab">
                 <table class="table">
                      <colgroup>
                         <col style="width: 14rem;" />
@@ -43,8 +105,8 @@
                         <tr>
                             <th>Object Type</th>
                             <td><a href="{{ ui_origin }}#spec/type/{{
-                            object_info.type_id }}" target="_blank">{{
-                            object_info.type_id}}</a> ({{ ui_origin }})</td>
+                            media_object.infostruct.type }}" target="_blank">{{
+                            media_object.infostruct.type}}</a></td>
                         </tr>
                         <tr>
                             <th>Owner</th>
@@ -82,59 +144,6 @@
                     </tbody>
                 </table>
             </div>
-            <div class="tab-pane fade pt-3 dataTablesOverride-ScrollingFlexFix" id="compounds" role="tabpanel" aria-labelledby="compounds-tab">
-                <table class="display table"  style="width: 100%" id="compounds-table">
-                    <thead>
-                        <tr>
-                            <th>Compound</th>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Formula</th>
-                            <th>Charge</th>
-                            <th>Min uptake (mol/g CDW hr)</th>
-                            <th>Max uptake (mol/g CDW hr)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in media_object.data.mediacompounds %}
-                            <tr>
-                                <td>
-                                    {{ row.id }}
-                                </td>
-                                <td>
-                                    <!--
-                                         Note that we handle a broken image, but modelseed will also show a
-                                         blank (white) image for some compounds; this is different than a
-                                         missing image
-                                     -->
-                                    <img class="compound-image"
-                                         src="https://minedatabase.mcs.anl.gov/compound_images/ModelSEED/{{ row.id }}.png"
-                                         alt="Image for compound '{{ row.id }}'"
-                                         style="width: 100px"
-                                         onerror="this.onerror=null;this.src='/services/servicewidgetdemo/widgets/media-viewer/static/broken-image.png'"
-                                    >
-                                </td>
-                                <td>
-                                    {{ row.name }}
-                                </td>
-                                <td>
-                                    {{ row.formula or "n/a" }}
-                                </td>
-                                <td>
-                                    {{ row.charge or "n/a" }}
-                                </td>
-                                <td>
-                                    {{ row.minFlux }}
-                                </td>
-                                <td>
-                                    {{ row.maxFlux }}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-
-            </div>
             <div class="tab-pane fade pt-3" id="about" role="tabpanel" aria-labelledby="about-tab">
                 <div class="narrative-text full-height-scrolling-text" >
                     <p>
@@ -169,9 +178,12 @@
             </div>
         </div>
         <script>
-            class MediaViewerRuntime extends WidgetRuntime {
+            // decouple from WidgetRuntime for now ... need to fold the widget runtime
+            // support into the iframe wrapper in the demo / devtool
+            // class MediaViewerRuntime extends fWidgetRuntime {
+            class MediaViewerRuntime {
                 constructor() {
-                    super();
+                    // super();
 
                     // Initialize data table for the compounds table
                     this.compoundsTable = new DataTable('#compounds-table', {
@@ -184,9 +196,11 @@
                     // A little hack to get the header to size correctly, as it is initially
                     // sized within the hidden second tab.
                     $('button[data-bs-toggle="tab"]').on('shown.bs.tab', (ev) => {
-                        this.widgetStateUpdated({
-                            tab: ev.target.id
-                        });
+                        if (this.widgetStateUpdated) {
+                            this.widgetStateUpdated({
+                                tab: ev.target.id
+                            });
+                        }
                         const id = ev.target.id;
                         if (id !== 'compounds-tab') {
                             return;

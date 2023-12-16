@@ -1,4 +1,4 @@
-from ...widget_utils import WidgetBase
+from widget.lib.widget_base import WidgetBase
 
 
 class Widget(WidgetBase):

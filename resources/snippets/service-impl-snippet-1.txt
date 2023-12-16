@@ -12,6 +12,7 @@
         widget_support.add_python_widget('media_viewer_py', module="media_viewer", title="Media Viewer")
         widget_support.add_python_widget('devtool')
         widget_support.add_python_widget('demos')
-        widget_support.add_python_widget('config')    
+        widget_support.add_python_widget('config')
+        widget_support.add_python_widget('protein_structures_viewer')
         #
         # END DS-SERVICE-WIDGET-ADD-WIDGETS

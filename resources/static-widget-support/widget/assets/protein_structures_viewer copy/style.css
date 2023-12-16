@@ -1,0 +1,22 @@
+
+head {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ProteinStructuresViewer .tab-content {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.ProteinStructuresViewer .tab-content > .tab-pane.active {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+}
