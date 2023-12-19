@@ -20,6 +20,19 @@
                     <p class="card-text">
                         {{ error.message }}
                     </p>
+                    {% if error.info %}
+                    <h3>More information about this error</h3>
+                    <table class="table table-bordered w-auto">
+                        <tbody>
+                    {% for label, info in error.info.items() %}
+                            <tr>
+                                <th>{{ label }}</th>
+                                <td>{{ info }}</td>
+                            </tr>
+                    {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
                 </div>
                 <div class="card-footer">
                     <a href="https://docs.kbase.us" target="_blank">KBase Documentation</a>

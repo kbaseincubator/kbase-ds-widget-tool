@@ -5,7 +5,7 @@ from widget.lib.widget_error import WidgetError
 
 
 class Widget(WidgetBase):
-    def get_context(self) -> dict:
+    def context(self) -> dict:
         """
         Get the object info, workspace info, and the object itself.
         """
@@ -23,12 +23,7 @@ class Widget(WidgetBase):
         pdb_infos_json = json.dumps(protein_structures_object["data"]["pdb_infos"])
 
         return {
-            'token': self.token, 
             'workspace_info': workspace_info, 
-            'ui_origin': self.widget_config.get('ui_origin'),
-            'base_path': self.widget_config.get('base_path'),
-            'asset_url': self.get_asset_url(),
-            'widget_asset_url': self.get_widget_asset_url(),
             'protein_structures_object': protein_structures_object,
             'pdb_infos_json': pdb_infos_json
         }

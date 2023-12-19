@@ -22,8 +22,7 @@ def main():
         sys.exit(1)
 
     module_directory = sys.argv[1]
-    widget_support = WidgetSupport(sdk_module_directory=module_directory)
-    widget_support.ensure_valid_service()
+    WidgetSupport(sdk_module_directory=module_directory)
     print()
 
 

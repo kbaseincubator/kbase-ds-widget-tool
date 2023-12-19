@@ -1,13 +1,20 @@
-
-<div class="card mt-2">
-    <div class="card-header">
-        Protein Structures Viewer
-    </div>
-    <div class="card-body">
-        <p>In this demo, we provide a landing page for the KBaseStructure.ProteinStructures data type, written
-            primarily in Python, utilizing Jinja2, with interactivity via Javascript, utilizing
-            jQuery, Bootstrap, DataTables, and featuring the mol* viewer.</p>
-
+<ul class="nav nav-tabs" role="tablist" id="demo-page-tabs">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="demo-tab" data-bs-toggle="tab" data-bs-target="#demo" type="button"
+            role="tab" aria-controls="demo" aria-selected="false">
+            Protein Structures Viewer
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="about-tab" data-bs-toggle="tab" data-bs-target="#about" type="button" role="tab"
+            aria-controls="about" aria-selected="true">
+            About
+        </button>
+    </li>
+</ul>
+<div class="tab-content" id="demo-page-tab-content">
+    <div class="tab-pane fade show active pt-3 dataTablesOverride-ScrollingFlexFix" id="demo" role="tabpanel"
+        aria-labelledby="demo-tab">
         <div class="container container-fluid" id="protein-structures-viewer-py-form">
             <div class="row mb-3">
                 <div class="col-sm-2 col-form-label">
@@ -40,37 +47,44 @@
         <div id="protein-structures-viewer-py-container" style="resize: vertical; overflow-y: auto;
 border: 1px solid silver; padding: 1rem; height; height: 30rem"></div>
 
+        <script>
+            document.querySelector('#protein-structures-viewer-py-form button[name="render"]').addEventListener("click", (e) => {
+                const ref = document.querySelector('#protein-structures-viewer-py-form input[name="object-ref"]').value;
+                const token = (() => {
+                    const token_field = document.querySelector('#protein-structures-viewer-py-form input[name="auth-token"]');
+                    if (token_field) {
+                        return token_field.value;
+                    }
+                    return null;
+                })();
+
+                if (ref.length === 0) {
+                    alert('Please enter a ref');
+                    return;
+                }
+
+                if (token) {
+                    document.cookie = `kbase_session=${token};path=/`;
+                }
+
+                const src = `{{ widget_config.base_path }}/widgets/protein_structures_viewer?ref=${ref}`;
+
+                const container = document.querySelector('#protein-structures-viewer-py-container');
+
+                container.innerHTML = `<iframe src="${src}" style="width: 100%; height: 100%;  border: none;" />`;
+            });
+
+            document.querySelector('#protein-structures-viewer-py-form button[name="kill"]').addEventListener("click", (e) => {
+                const container = document.querySelector('#protein-structures-viewer-py-container');
+                container.innerHTML = '';
+            });
+        </script>
+    </div>
+
+    <div class="tab-pane fade pt-3 dataTablesOverride-ScrollingFlexFix" id="about" role="tabpanel"
+        aria-labelledby="about-tab">
+        <p>In this demo, we provide a landing page for the KBaseStructure.ProteinStructures data type, written
+            primarily in Python, utilizing Jinja2, with interactivity via Javascript, utilizing
+            jQuery, Bootstrap, DataTables, and featuring the mol* viewer.</p>
     </div>
 </div>
-<script>
-    document.querySelector('#protein-structures-viewer-py-form button[name="render"]').addEventListener("click", (e) => {
-        const ref = document.querySelector('#protein-structures-viewer-py-form input[name="object-ref"]').value;
-        const token = (() => {
-            const token_field = document.querySelector('#protein-structures-viewer-py-form input[name="auth-token"]')
-            if (token_field) {
-                return token_field.value;
-            }
-            return null;
-        })();
-   
-        if (ref.length === 0) {
-            alert('Please enter a ref');
-            return;
-        }
-
-        if (token) {
-            document.cookie = `kbase_session=${token};path=/`
-        }   
-
-        const src = `{{ widget_config.base_path }}/widgets/protein_structures_viewer?ref=${ref}`;
-
-        const container = document.querySelector('#protein-structures-viewer-py-container');
-
-        container.innerHTML = `<iframe src="${src}" style="width: 100%; height: 100%;  border: none;" />`;
-    });
-
-    document.querySelector('#protein-structures-viewer-py-form button[name="kill"]').addEventListener("click", (e) => {
-        const container = document.querySelector('#protein-structures-viewer-py-container');
-        container.innerHTML = '';
-    });
-</script>

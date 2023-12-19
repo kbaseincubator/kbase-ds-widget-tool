@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from ..handler_utils import handle_static_file
+from widget.lib.handler_utils import handle_static_file
 
 #
 # Static widgets are mapped to the filesystem.
@@ -16,11 +16,11 @@ class WidgetError(Exception):
 
 
 class Assets(object):
-    def __init__(self, service_module_name, name, config, widget_config, path, title):
-        self.service_module_name = service_module_name
+    def __init__(self, service_package_name, name, service_config, widget_config, path, title):
+        self.service_package_name = service_package_name
         self.name = name
         self.title = title
-        self.config = config
+        self.service_config = service_config
         self.path = path
         self.widget_config = widget_config
 

@@ -14,6 +14,7 @@ class WidgetSupport(object):
     def __init__(self, sdk_module_directory):
         self.sdk_module_directory = sdk_module_directory
         self.checked = False
+        self.ensure_valid_service()
 
     def ensure_attribute(self, data, name, label):
         attribs = name.split('.')
@@ -118,6 +119,12 @@ class WidgetSupport(object):
         #     error_exit('The KBase kb-sdk service must already be configured as a dynamic service')
 
         module_name = self.ensure_attribute(kbase_config, "module-name", "KBase Config")
+
+        language = self.ensure_attribute(kbase_config, "service-language", "KBase Config")
+        if language != 'python':
+            error_exit(f'The service module "{module_name}" is not a python service: {language}')
+        else:
+            success_feedback(f'The service module "{module_name}" is a python service')
 
         if self.get_attribute(kbase_config, 'service-config.dynamic-service'):
             success_feedback(f'The service module "{module_name}" is indeed a dynamic service as well')

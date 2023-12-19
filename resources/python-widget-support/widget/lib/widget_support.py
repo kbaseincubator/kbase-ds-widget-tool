@@ -1,9 +1,11 @@
 import os
 import re
 
+import yaml
 from widget.handlers.assets import Assets
 from widget.handlers.python_widget import PythonWidget
 from widget.handlers.static_widget import StaticWidget
+from widget.lib.widget_error import WidgetError
 
 
 def not_found(widget_name):
@@ -17,26 +19,24 @@ GLOBAL_WIDGET_SUPPORT = None
 
 class WidgetSupport(object):
     WIDGETS = {}
-    def __init__(self, config, service_module_name, git_commit_hash):
-        self.config = config
-        self.git_commit_hash = git_commit_hash
+    def __init__(self, service_config, service_package_name, service_instance_hash, init_file=None):
+        self.service_config = service_config
+        self.service_instance_hash = service_instance_hash
 
         # TODO: remove that parameter, as it is now in the config
-        self.service_module_name = service_module_name
+        self.service_package_name = service_package_name
+
+        self.widget_config = self.load_config()
 
         dev_env_var = os.environ.get('DEV') or ''
         self.runtime_mode = "DEVELOPMENT" if dev_env_var.lower().startswith('t') else "PRODUCTION"
         
-        print("RUNTIME MODE", self.runtime_mode)
-
         if self.runtime_mode == "DEVELOPMENT":
             self.base_path = ""
         else:
-            self.base_path = f"/dynserv/{git_commit_hash}.{service_module_name}"
+            self.base_path = f"/dynserv/{service_instance_hash}.{service_package_name}"
             
-        print("BASE PATH", self.base_path)
-
-        result = re.match(r'^((?:.+)://(?:.+?))(?:/.*)?$', config['kbase-endpoint'])
+        result = re.match(r'^((?:.+)://(?:.+?))(?:/.*)?$', service_config['kbase-endpoint'])
 
         origin = result.group(1)
 
@@ -48,9 +48,6 @@ class WidgetSupport(object):
             self.ui_origin = 'https://narrative.kbase.us'
         else:
             self.ui_origin = origin
-
-        print("UI ORIGIN", self.ui_origin)
-
 
         #
         # Here we create a set of origins and urls that point back to this service.
@@ -67,23 +64,45 @@ class WidgetSupport(object):
             #
             port = 5100
             self.service_origin = f'http://localhost:{port}'
-
-            print('SERVICE ORIGIN', self.service_origin)
-
             self.service_url = self.service_origin + self.base_path
-
-            print('SERVICE URL', self.service_url)
         else:
             #
             # If not local, then the base origin is still the deploy env.
             #
             self.service_origin = origin
-
-            print('SERVICE ORIGIN', self.service_origin)
-
             self.service_url = origin + self.base_path
 
-            print('SERVICE URL', self.service_url)
+
+        self.initialize_widgets()
+
+    def load_config(self):
+        with open(os.path.join(os.path.dirname(__file__), '../../../widget/widgets.yml'), 'r', encoding="utf-8") as fin:
+            return yaml.load(fin)
+
+    def initialize_widgets(self):
+        for widget in self.widget_config['widgets']:
+            if widget['type'] == "assets":
+                self.add_assets_widget(widget['name'])
+            elif widget['type'] == "static":
+                self.add_static_widget(
+                    widget['name'],
+                    path=widget.get('path') or widget['name'],
+                    title=widget.get('title'),
+                    description=widget.get('description')
+                    )
+            elif widget['type'] == "python":
+                self.add_python_widget(
+                    widget['name'], 
+                    package=widget.get('package') or widget['name'], 
+                    title=widget.get('title'),
+                    description=widget.get('description')
+                )
+            else:
+                raise WidgetError(
+                    title= "Invalid Widget Type in Config",
+                    code= "invalid-widget-config",
+                    message = f"The widget type {widget['type']} is not supported."
+                )
 
     def get_widget_config(self):
         return {
@@ -102,38 +121,40 @@ class WidgetSupport(object):
 
     def add_assets_widget(self, name, title=None, path=None):
         widget_instance = Assets(
-            service_module_name = self.service_module_name,
+            service_package_name = self.service_package_name,
             name = name,
             path = path or name,
             title = title or name.title(),
-            config = self.config,
+            service_config = self.service_config,
             widget_config = self.get_widget_config()
         )
 
         self.WIDGETS[name] = widget_instance
 
-    def add_static_widget(self, name, title=None, path=None):
+    def add_static_widget(self, name, title=None, path=None, description=None):
 
         widget_instance = StaticWidget(
-            service_module_name = self.service_module_name,
+            service_package_name = self.service_package_name,
             name = name,
             path = path or name,
             title = title or name.title(),
-            config = self.config,
+            description = description,
+            service_config = self.service_config,
             widget_config = self.get_widget_config()
         )
 
         self.WIDGETS[name] = widget_instance
 
-    def add_python_widget(self, name, module=None, title=None, path=None):
+    def add_python_widget(self, name, package=None, title=None, path=None, description=None):
 
         widget_instance = PythonWidget(
-            service_module_name = self.service_module_name,
+            service_package_name = self.service_package_name,
             name = name,
             path = path or name,
             title = title or name.title(),
-            config = self.config,
-            widget_module_name = module or name,
+            description = description, 
+            service_config = self.service_config,
+            widget_package_name = package,
             widget_config = self.get_widget_config()
         )
 
@@ -163,9 +184,9 @@ class WidgetSupport(object):
 
         return status, response_headers, content
 
-def set_global_widget_support(widget_support):
-    global GLOBAL_WIDGET_SUPPORT
-    GLOBAL_WIDGET_SUPPORT = widget_support
+    def set_global(self):
+        global GLOBAL_WIDGET_SUPPORT
+        GLOBAL_WIDGET_SUPPORT = self
 
 def get_global_widget_support():
     return GLOBAL_WIDGET_SUPPORT

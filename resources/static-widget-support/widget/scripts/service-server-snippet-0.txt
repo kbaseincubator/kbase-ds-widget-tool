@@ -2,6 +2,6 @@
 # BEGIN DS-SERVICE-WIDGET-IMPORT
 # Injected by the Dynamic Service Widget Tool
 #
-from widget.widget_handler import get_global_widget_support
+from widget.lib.widget_support import get_global_widget_support
 #
 # END DS-SERVICE-WIDGET-IMPORT

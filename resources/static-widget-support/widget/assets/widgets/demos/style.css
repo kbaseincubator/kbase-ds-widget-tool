@@ -9,6 +9,20 @@
     padding: 0.5rem;
 }
 
+.demo-page-nav-column .btn {
+    width: 100%;
+}
+
+/* .demo-page-nav-item {
+    margin-bottom: 1rem;
+} */
+
+.demo-page-content-column {
+    display: block;
+    flex: 1 1 0;
+}
+
+
 /* .demo-page-nav-column .btn {
     width: 100%;
 } */
@@ -17,6 +31,7 @@
     margin-bottom: 1rem;
     display: flex;
     flex-direction: row;
+    align-items: center;
 }
 
 .demo-page-nav-item > a.btn {
@@ -24,10 +39,6 @@
 }
 
 .demo-page-nav-item > i {
+    margin-left: 0.5rem;
     flex: 0 0 auto;
-}
-
-.demo-page-content-column {
-    display: block;
-    flex: 1 1 0;
 }

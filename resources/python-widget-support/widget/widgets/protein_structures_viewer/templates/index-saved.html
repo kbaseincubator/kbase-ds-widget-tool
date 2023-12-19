@@ -1,0 +1,246 @@
+ <html lang="en-US">
+        <head>
+            <title>Jinja2 Demo</title>
+
+            <!-- bootstrap -->
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" integrity="sha256-BicZsQAhkGHIoR//IB2amPN5SrRb3fHB8tFsnqRAwnk=" crossorigin="anonymous">
+
+            <!-- jquery -->
+            <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+            <!-- data tables -->
+            <link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/sc-2.2.0/datatables.min.css" rel="stylesheet">
+            <script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/sc-2.2.0/datatables.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/molstar@3.38.3/build/viewer/molstar.min.js"></script>
+
+            <!-- molstar -->
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/molstar@3.38.3/build/viewer/molstar.min.css">
+
+            <!-- global styles for this service -->
+            <link href="/services/servicewidgetdemo/widgets/static/style.css" rel="stylesheet">
+
+            <!-- styles for this widget -->
+            <link href="/services/servicewidgetdemo/widgets/protein-structures-viewer/static/style.css" rel="stylesheet">
+        </head>
+        <body>
+            <h1>Protein Structures Viewer</h1>
+            <div id="viewer"></div>
+            <ul class="nav nav-tabs" role="tablist" id="protein-structures-tabs">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active"
+                            id="main-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#main"
+                            type="button" role="tab"
+                            aria-controls="main"
+                            aria-selected="true">
+                        Protein Structures
+                    </button>
+                </li>
+                 <li class="nav-item" role="presentation">
+                    <button class="nav-link"
+                            id="test-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#test"
+                            type="button"
+                            role="tab"
+                            aria-controls="test"
+                            aria-selected="false">
+                        About
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="protein-structures-content">
+                <div class="tab-pane fade show active pt-3" id="main" role="tabpanel" aria-labelledby="main-tab">
+                    <table class="display table"  style="width: 100%" id="main-table">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Format</th>
+                                <th>Viewers</th>
+                                <th>Genome</th>
+                                <th>Feature</th>
+                                <th>Model and Chain Matching Feature</th>
+                                <th>Sequence Identity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in protein_structures_object.data.pdb_infos %}
+                                <tr>
+                                    <td>
+                                        {{ row.structure_name }}
+                                    </td>
+                                    <td>
+                                       {{ row.file_extension }}
+                                    </td>
+                                    <td>
+                                        <button type="button"
+                                                class="btn btn-outline-secondary"
+                                                id="structure_name_{{ row.structure_name }}">
+                                            mol*
+                                        </button>
+                                    </td>
+                                    <td>
+                                        {{ row.genome_ref }}
+                                    </td>
+                                    <td>
+                                        {{ row.feature_id }}
+                                    </td>
+                                    <td>
+                                        {{ row.chain_ids }}
+                                    </td>
+                                    <td>
+                                        {{ row.sequence_identities }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="tab-pane fade  pt-3" id="test" role="tabpanel" aria-labelledby="test-tab" >
+                    <div style="flex: 1 1 0; overflow-y: auto;">
+                        <p>
+                            This widget is built with jinja2, bootstrap, jquery, and the molstar viewer.
+                        </p>
+                        <p>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <script>
+                // Initialize data table for the compounds table
+                new DataTable('#main-table', {
+                    paging: false,
+                    scrollCollapse: true,
+                    scrollY: '400px',
+                    dom: '<"dataTablesOverride-top"if>t'
+                });
+
+                const pdbInfos = {{ pdb_infos_json }};
+                const pdbInfosMap = pdbInfos.reduce((pdbInfosMap, info) => {
+                    pdbInfosMap[info.structure_name] = info;
+                    return pdbInfosMap;
+                }, {});
+
+                for (const {structure_name} of pdbInfos){
+                    $(`#structure_name_${structure_name}`).on('click', () => {
+                        showMolStarViewer(pdbInfosMap[structure_name]);
+                    });
+                }
+
+                // console.log('pdb infos?', pdbInfos);
+
+                function renderMolstarViewer(id, name) {
+                     molstar.Viewer.create(id, {
+                            layoutIsExpanded: false,
+                            layoutShowControls: false,
+                            layoutShowRemoteState: false,
+                            layoutShowSequence: true,
+                            layoutShowLog: false,
+                            layoutShowLeftPanel: true,
+
+                            viewportShowExpand: true,
+                            viewportShowSelectionMode: false,
+                            viewportShowAnimation: false,
+
+                            pdbProvider: 'rcsb',
+                            emdbProvider: 'rcsb',
+                        }).then(viewer => {
+                          viewer.loadPdb(name);
+                          // viewer.loadEmdb('EMD-30210', { detail: 6 });
+                        });
+                }
+
+                /**
+                 * Adds a tab with a placeholder for content to be rendered into.
+                 *
+                 * @param {string} tabsId The base identifier for the tabset;
+                 * @param {string} id The base identifier for the tab and tab content
+                 * @param {string} label The tab label
+                 * @returns {(*|jQuery|string)[]}
+                 */
+                function $addTab(tabsId, id, label) {
+                    const tabId = `${id}-tab`;
+                    // const viewerId = `${id}-viewer`;
+
+                    // If the tab exists, select it.
+                    const existingTab = $(`#${tabId}`).get(0);
+                    if (existingTab) {
+                        new bootstrap.Tab(existingTab).show();
+                        return;
+                    }
+
+                    const $tab = $('<li>')
+                        .addClass('nav-item').attr('role', 'presentation')
+                        .append(
+                            $('<div>')
+                                .addClass('btn-group')
+                                .append(
+                                    $('<button>')
+                                        .text(label)
+                                        .addClass('nav-link')
+                                        .attr('id', tabId)
+                                        .attr('data-bs-toggle', 'tab')
+                                        .attr('data-bs-target', `#${id}`)
+                                        .attr('type', 'button')
+                                        .attr('aria-controls', id)
+                                        .attr('aria-selected', 'false')
+                                )
+                                .append(
+                                    $('<button>')
+                                        .append($('<span>').addClass('bi bi-x'))
+                                        .addClass('btn btn-sm btn-link')
+                                        .css('display', 'inline')
+                                        .css('padding', '0.25rem')
+                                        .on('click', (ev) => {
+                                            $pane.remove();
+                                            $tab.remove();
+                                            const $tabs = $(`#${tabsId}-tabs > li button.nav-link`);
+                                            new bootstrap.Tab($tabs.get(0)).show();
+                                        })
+                                )
+                        )
+
+                    const $viewer = $('<div>')
+                        // .attr('id', viewerId)
+                        .attr('data-element', 'viewer')
+                        .css('flex', '1 1 0')
+                        .css('position', 'relative')
+
+                    const $pane =  $('<div>')
+                        .addClass('tab-pane fade pt-3')
+                        .attr('id', id)
+                        .attr('role', 'tabpanel')
+                        .attr('aria-labelledby', tabId)
+                        .append($viewer)
+
+                    // Note that this relies upon the tabset having ids matching
+                    // this pattern (which is not required by bootstrap).
+                    $(`#${tabsId}-tabs`).append($tab)
+                    $(`#${tabsId}-content`).append($pane)
+
+                    new bootstrap.Tab($tab.find('button').get(0)).show();
+
+                    return $pane
+                }
+
+                function showMolStarViewer(pdbInfo) {
+                    // add tab.
+                    const name = pdbInfo.structure_name;
+                    const id = `protein-structure-${name}`;
+                    const tabsId = 'protein-structures';
+                    const $tabPane = $addTab(tabsId, id, name);
+
+                    // Set a unique id with which to associate the pane's content element with the
+                    // molstar viewer. The molstar viewer requires an id, not an element or selector,
+                    // in order to render.
+                    const molstarId = `${id}-molstar`;
+                    $tabPane.find('[data-element="viewer"]').attr('id', molstarId);
+                    renderMolstarViewer(molstarId, name);
+                }
+            </script>
+        </body>
+</html>

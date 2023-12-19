@@ -1,3 +1,4 @@
+import json
 import os
 import re
 
@@ -11,27 +12,27 @@ class WidgetBase:
     """
     Base behavior for Python Widgets
     """
-    def __init__(self, service_module_name, widget_module_name, token, params, rest_path, config, widget_config):
+    def __init__(self, service_package_name, widget_package_name, token, params, rest_path, service_config, widget_config):
         # The module name for the service (directory name, first component of service
         # package path)
-        self.service_module_name = service_module_name
+        self.service_package_name = service_package_name
 
         # The name of the widget's import path (or name) component within the widgets
         # package. The Python widgets package resides in
         # widget.widgets
         # We need this value for dynamically constructing the file system loader for templates.
-        self.widget_module_name = widget_module_name
+        self.widget_package_name = widget_package_name
 
         # Service config (from deploy.cfg)
-        self.config = config
+        self.service_config = service_config
 
         self.widget_config = widget_config
 
         # KBase auth token, as provided by the router
         self.token = token
 
-        # Paraemters from the url search component - i.e. query params
-        self.params = params
+
+        self.params = self.extract_params(params)
 
         # The rest of the path after the widget name itself. This can be used for
         # parameterization as well, or for any purpose.
@@ -48,10 +49,41 @@ class WidgetBase:
         # well as that established by Dynamic Service Widgets.
         global_loader = FileSystemLoader("./lib/widget/widgets/templates")
         widget_loader = FileSystemLoader(
-           f"./lib/widget/widgets/{self.widget_module_name}/templates"
+           f"./lib/widget/widgets/{self.widget_package_name}/templates"
         )
         loader = ChoiceLoader([widget_loader, global_loader])
         self.env = Environment(loader=loader)
+
+    def extract_params(self, url_search_params):
+        """
+        Extracts normalized parameters from the dict of search fragment query fields as
+        provided by the requests library.
+
+        Note that as a search query field may be repeated, requests represents the value
+        as an array. We just take the first element, although future work could, for
+        example, allow an array to be passed via repeated fields. For now, the solution
+        for any data more complex than a string is to use the special `params` parameter.
+
+        Parameters from the url search component - i.e. query params
+        We support two styles. For simplicity, a param may be provided directly as a
+        search/query param. Of course, the value will be a string - the widget is
+        responsible for interpreting it, casting to the ultimate form, etc.
+        For reliability and extensibility, a single `params` search param may be
+        supplied, which is a JSON text value. That is, it is a JSON-compatible
+        structure which has been converted to a JSON string form (e.g. in JS
+        JSON.stringify(params), or Python json.dumps(params)), and url-encoded to make
+        it safe to transport in a URL. This style preservers, of course, any
+        JSON-compatible value in it's native form.
+        """
+        params = {}
+        for key, value in url_search_params.items():
+            if key == 'params':
+                print('PARAMS??', json.loads(value[0]))
+                params.update(json.loads(value[0]))
+            else:
+                params[key] = value[0]
+        return params
+
 
     def get_param(self, key):
         """ 
@@ -60,12 +92,16 @@ class WidgetBase:
         The parsed search params is not a straight dict, as the value is an array, to
         accommodate multiple parameters (a rare case!).
         """
-        value = self.params.get(key)
-        if value is None:
-            return None
-        if len(value) != 1:
-            return None
-        return value[0]
+        return self.params.get(key)
+
+    def has_param(self, key):
+        return key in self.params
+
+    def context(self):
+        """
+        To be implemented, if need be, by a widget implementation
+        """
+        return {}
 
     def get_context(self) -> dict:
         """
@@ -74,7 +110,17 @@ class WidgetBase:
         In the base class, it defaults to an empty dict, so that a simple widget with no
         context will just work.
         """
-        return {}
+        context = {
+            'token': self.token, 
+            'service_config': self.service_config,
+            'widget_config': self.widget_config,
+            'ui_origin': self.widget_config.get('ui_origin'),
+            'base_path': self.widget_config.get('base_path'),
+            'asset_url': self.get_asset_url(),
+            'widget_asset_url': self.get_widget_asset_url(),
+        }
+        context.update(self.context())
+        return context
 
     def render(self) -> str:
         """
@@ -103,12 +149,12 @@ class WidgetBase:
        return os.path.join(self.widget_config.get('service_url'), 'widgets', 'assets')
 
     def get_widget_asset_url(self):
-        return os.path.join(self.widget_config.get('service_url'), 'widgets', 'assets', self.widget_module_name)
+        return os.path.join(self.widget_config.get('service_url'), 'widgets', 'assets', 'widgets', self.widget_package_name)
 
     def get_object(self, ref, allowed_types):
         workspace = GenericClient(
             module_name='Workspace',
-            url = self.config.get('workspace-url'),
+            url = self.service_config.get('workspace-url'),
             token = self.token,
             timeout=10000
         )
@@ -132,16 +178,18 @@ class WidgetBase:
                 code="file-too-big",
                 message=f"Object too big: {object_info['size']}")
 
-        type_module, type_name, _type_version_major, _type_version_minor = re.split(r'[.-]', object_info['type_id'])
+        type_module, type_name, type_version_major, type_version_minor = re.split(r'[.-]', object_info['type_id'])
 
         type_id_versionless = '.'.join([type_module, type_name])
+
+        print('HMM?', object_info['type_id'], type_module, type_name, type_id_versionless)
 
         # if type_module != "KBaseStructure" and type_name != "ProteinStructures":
         if type_id_versionless not in allowed_types:
             raise WidgetError(
                 title="Error",
                 code="incorrect-type",
-                message=f"Expected an object of type KBaseStructure.ProteinStructures, but got {object_info['type_id']}"
+                message=f"Expected an object of type {', '.join(allowed_types)}, but got {type_id_versionless} (v{type_version_major}.{type_version_minor})"
             )
 
         workspace_id = object_info['workspace_id']

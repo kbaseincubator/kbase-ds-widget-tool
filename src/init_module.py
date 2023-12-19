@@ -23,8 +23,6 @@ def main():
     widget_support = WidgetSupport(
         sdk_module_directory=sys.argv[1]
     )
-
-    widget_support.ensure_valid_service()
     widget_support.add_widget_support()
     print()
 

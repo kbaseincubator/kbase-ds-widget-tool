@@ -61,6 +61,8 @@ modifies the process to fit this tutorial.
     Here we use the `kb-sdk` tool set up above to create and populate a KBase "module".
 
     You can set up these environment variables in order to facilitate future commands.
+    If you play to deploy this service, as opposed to simply practicing this process,
+    you should use your KBase username below, and think of an appropriate module name.
 
     ```shell
     export KBASE_USERNAME="yourusername"
@@ -247,6 +249,8 @@ Now we are ready to add widget support to the dynamic service!
     export MODULE_DIR=/path/to/projectdir/yourusernameYourModuleName
     ```
 
+    > On macOS you can issue `pwd | pbcopy` to avoid the mouse usage of highlight-copy.
+
     There are various clever ways of doing this on the command line, but many are not
     universal across systems.
 
@@ -336,7 +340,7 @@ Now we are ready to add widget support to the dynamic service!
 
     ```shell
     export KBASE_ENDPOINT=https://ci.kbase.us/services/ 
-    docker compose run --service-ports yourusernameyourmodulename bash
+    docker compose run --rm --service-ports yourusernameyourmodulename bash
     ```
 
     Note that the service module name has been converted to lower case; this is a
@@ -344,16 +348,16 @@ Now we are ready to add widget support to the dynamic service!
 
     A copy-pastable form without the hardcoded service name `yourusernameyourmodulename`
     is:
-    
+
     ```shell
-    docker compose run --service-ports $(echo "${SDK_MODULE}" | tr '[:upper:]' '[:lower:]') bash
+    docker compose run --rm --service-ports $(echo "${SDK_MODULE}" | tr '[:upper:]' '[:lower:]') bash
     ```
 
     If docker compose fails due to port 5100 already being allocated, set the `PORT`
     environment variable first. E.g. the following starts the container using port 5200:
 
     ```shell
-    PORT=5200 docker compose run --service-ports yourusernameyourmodulename bash
+    PORT=5200 docker compose run --rm --service-ports yourusernameyourmodulename bash
     ```
 
     This will leave you inside the service container on the bash shell command line.

@@ -1,0 +1,54 @@
+widgets:
+  # Default - built-in
+
+  - name: assets
+    type: assets
+
+  - name: devtool
+    type: python
+
+  - name: demos
+    type: python
+
+  - name: config
+    type: python
+
+   # Viewers
+
+  - name: media_viewer
+    type: static
+
+  - name: media_viewer_py
+    type: python
+    package: media_viewer
+    title: Media Viewer
+
+  - name: protein_structures_viewer
+    type: python
+
+  # - name: genome_viewer
+  #   type: static
+
+  # - name: genome_viewer_py
+  #   type: python
+  #   module: genome_viewer
+
+
+  # Generic
+
+  - name: demo_genome_edit_classification_viewer
+    type: python
+
+  # Tutorial examples
+
+  - name: minimal_example_py
+    type: python
+    package: minimal_example
+    title: Minimal Python Widget Example
+    description: A minimal example of a Python template
+
+  - name: minimal_example_js
+    type: static
+    path: minimal_example
+    title: Minimal Javascript Widget Example
+    description: A minimal example of a Javascript template

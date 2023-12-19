@@ -7,3 +7,4 @@ __pycache__
 .venv
 _trash
 _working
+.DS_Store

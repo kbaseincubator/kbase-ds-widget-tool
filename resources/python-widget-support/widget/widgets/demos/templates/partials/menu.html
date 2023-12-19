@@ -1,20 +1,74 @@
 <div class="demo-page-nav-item">
-    <a role="button" class="btn btn-secondary" href="{{ widget_config.base_path }}/widgets/demos">
+    <a role="button" class="btn btn-secondary" href="{{ widget_config.base_path }}/widgets/demos?demo=home">
         Home
     </a>
+    {% if requested_demo == "home" %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%;"></i>
+    {% else %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%; visibility: hidden; "></i>
+    {% endif %}
 </div>
+
+<div class="demo-page-nav-item"> 
+    <a class="btn btn-primary"  href="{{ widget_config.base_path }}/widgets/demos?demo=data-viewers">
+       Data Viewers
+    </a>
+    {% if requested_demo == "data-viewers" %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%;"></i>
+    {% else %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%; visibility: hidden; "></i>
+    {% endif %}
+</div>
+
 <div class="demo-page-nav-item">
     <a  class="btn btn-secondary" role="button" href="{{ widget_config.base_path }}/widgets/demos?demo=media-viewer-js">
-        Media Viewer - JS
+        Media Viewer (js)
     </a>
+    {% if requested_demo == "media-viewer-js" %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%;"></i>
+    {% else %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%; visibility: hidden; "></i>
+    {% endif %}
 </div>
 <div class="demo-page-nav-item"> 
     <a class="btn btn-secondary"  href="{{ widget_config.base_path }}/widgets/demos?demo=media-viewer-py">
-        Media Viewer - Python
+        Media Viewer (py)
     </a>
+    {% if requested_demo == "media-viewer-py" %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%;"></i>
+    {% else %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%; visibility: hidden; "></i>
+    {% endif %}
 </div>
 <div class="demo-page-nav-item"> 
     <a class="btn btn-secondary"  href="{{ widget_config.base_path }}/widgets/demos?demo=protein-structures-viewer">
-        Protein Structures Viewer - Python
+        Protein Structures Viewer (py)
     </a>
+    {% if requested_demo == "protein-structures-viewer" %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%;"></i>
+    {% else %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%; visibility: hidden; "></i>
+    {% endif %}
+</div>
+
+<div class="demo-page-nav-item"> 
+    <a class="btn btn-primary"  href="{{ widget_config.base_path }}/widgets/demos?demo=generic-widgets">
+       Generic Widgets
+    </a>
+    {% if requested_demo == "generic-widgets" %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%;"></i>
+    {% else %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%; visibility: hidden; "></i>
+    {% endif %}
+</div>
+
+<div class="demo-page-nav-item"> 
+    <a class="btn btn-secondary"  href="{{ widget_config.base_path }}/widgets/demos?demo=demo-genome-viewer">
+        Genome Edit Output Viewer (py)
+    </a>
+    {% if requested_demo == "demo-genome-viewer" %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%;"></i>
+    {% else %}
+        <i class="bi bi-arrow-right-circle" style="font-size: 150%; visibility: hidden; "></i>
+    {% endif %}
 </div>

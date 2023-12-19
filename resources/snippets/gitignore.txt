@@ -1,9 +1,9 @@
 
-# BEGIN DS-SERVICE-WIDGET-GIT-IGNORE
+# BEGIN DS-WIDGET GIT-IGNORE
 # Injected by the Dynamic Service Widget Tool
 #
 __pycache__
 .DS_Store
 deploy.cfg.orig
 *.bak-*
-# END DS-SERVICE-WIDGET-GIT-IGNORE
+# END DS-WIDGET GIT-IGNORE
