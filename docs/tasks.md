@@ -35,7 +35,7 @@ Prints information about the `Taskfile` script as well as all available tasks.
 
 ## `status`
 
-Prints information about the `ds-widget-tool`.
+Prints information about the `kbase-ds-widget-tool`.
 
 ## `clean`
 

@@ -4,8 +4,8 @@ networks:
     name: kbase-dev
     external: true
 services:
-  ds-widget-tool:
-    image: ds-widget-tool:dev
+  kbase-ds-widget-tool:
+    image: kbase-ds-widget-tool:dev
     networks:
       - kbase-dev
     build:

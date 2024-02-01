@@ -47,7 +47,7 @@ def clean(path):
 def usage():
     print("clean DIRECTORY")
     print("")
-    print("Cleans extraneous files out of the given ds-widget-tool directory")
+    print("Cleans extraneous files out of the given kbase-ds-widget-tool directory")
     print("")
 
 

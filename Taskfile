@@ -16,7 +16,7 @@ function init-module {
         echo "Usage: ./Taskfile init-module MODULE_DIR"
         exit 1
     fi
-    docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool "python src/init_module.py /kb/module_dir"
+    docker compose run --rm -v "${1}:/kb/module_dir" kbase-ds-widget-tool "python src/init_module.py /kb/module_dir"
 }
 
 function check-module {
@@ -32,7 +32,7 @@ function check-module {
         exit 1
     fi
     echo "Using service directory ${1}"
-    docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool "python src/check_module.py /kb/module_dir"
+    docker compose run --rm -v "${1}:/kb/module_dir" kbase-ds-widget-tool "python src/check_module.py /kb/module_dir"
 }
 
 function shell {
@@ -48,15 +48,15 @@ function shell {
         exit 1
     fi
     echo "Using service directory ${1}"
-    docker compose run --rm -v "${1}:/kb/module_dir" ds-widget-tool bash
+    docker compose run --rm -v "${1}:/kb/module_dir" kbase-ds-widget-tool bash
 }
 
 function bash {
-    docker compose run --rm  ds-widget-tool bash
+    docker compose run --rm  kbase-ds-widget-tool bash
 }
 
 function status {
-    docker compose run --rm ds-widget-tool "python src/status.py"
+    docker compose run --rm kbase-ds-widget-tool "python src/status.py"
 }
 
 #
@@ -65,7 +65,7 @@ function status {
 # to prevent development artifacts being copied into the service.
 #
 function clean {  
-    docker compose run --rm -v "${1:-$PWD}:/kb/clean_dir" ds-widget-tool "python src/clean.py /kb/clean_dir"
+    docker compose run --rm -v "${1:-$PWD}:/kb/clean_dir" kbaes-ds-widget-tool "python src/clean.py /kb/clean_dir"
 }
 
 function help {

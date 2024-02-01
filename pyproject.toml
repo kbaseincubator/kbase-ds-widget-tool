@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "ds-widget-tool"
+name = "kbase-ds-widget-tool"
 version = "0.0.1"
 description = "Dynamic Service Widget Tool"
 authors = ["KBase Developers"]

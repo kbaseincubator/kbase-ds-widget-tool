@@ -157,12 +157,12 @@ modifies the process to fit this tutorial.
 Before we continue to convert this KBase service module into a dynamic service with
 widgets, let us get familiar with the tool we'll be using.
 
-This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar to
+This tool is the Dynamic Service Widget Tool , `kbase-ds-widget-tool`, which, similar to
 `kb-sdk`, runs as a docker container.
 
 1. Obtain a copy of the tool (`myproject`)
 
-    To get started, we'll install a copy of the `ds-widget-tool` locally. At present, it cannot be
+    To get started, we'll install a copy of the `kbase-ds-widget-tool` locally. At present, it cannot be
     run remotely, but must be installed locally.
 
     First, navigate back to the project directory as we'll be installing the tool there.
@@ -181,15 +181,15 @@ This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar 
     Then install the tool:
 
     ```shell
-    git clone https://github.com/eapearson/ds-widget-tool
+    git clone https://github.com/eapearson/kbase-ds-widget-tool
     ```
 
-2. Ensure the tool will work correctly (`myproject/ds-widget-tool`)
+2. Ensure the tool will work correctly (`myproject/kbase-ds-widget-tool`)
 
-    For convenience, we'll be running the commands inside the ds-widget-tool directory:
+    For convenience, we'll be running the commands inside the kbase-ds-widget-tool directory:
 
     ```shell
-    cd ds-widget-tool
+    cd kbase-ds-widget-tool
     ```
 
     The tool works via a script named `Taskfile`, to which you will provide commands and parameters.
@@ -227,17 +227,17 @@ This tool is the Dynamic Service Widget Tool , `ds-widget-tool`, which, similar 
     You should see:
 
     ```shell
-    This is the ds-widget-tool, a docker-based set of Python scripts
+    This is the kbase-ds-widget-tool, a docker-based set of Python scripts
     to help manage a KBase dynamic service with widgets.
 
-    See https://github.com/eapearson/ds-widget-tool.
+    See https://github.com/eapearson/kbase-ds-widget-tool.
     ```
 
 ## C. Add Widget Support to the Dynamic Service
 
 Now we are ready to add widget support to the dynamic service!
 
-1. Verify the module (`myproject/ds-widget-tool`)
+1. Verify the module (`myproject/kbase-ds-widget-tool`)
 
     Our first step is to ensure that the KBase SDK service module is ready to receive
     widget support. To do this, we run the `check-module` command, passing it the
@@ -276,7 +276,7 @@ Now we are ready to add widget support to the dynamic service!
     ```
 
     should work on most POSIX compliant systems if `yourusernameYourModuleName` and
-    `ds-widget-tool` were placed in the same project directory (i.e. they are sibling directories.)
+    `kbase-ds-widget-tool` were placed in the same project directory (i.e. they are sibling directories.)
 
     In any case, you should see something like this:
 
@@ -299,7 +299,7 @@ Now we are ready to add widget support to the dynamic service!
     Task completed in 0m0.480s
     ```
 
-2. Use the `init-module` task to upgrade the module (`myproject/ds-widget-tool`)
+2. Use the `init-module` task to upgrade the module (`myproject/kbase-ds-widget-tool`)
 
     Now we are ready to run the `init-module` task  to add the widget support to the module
     codebase.
