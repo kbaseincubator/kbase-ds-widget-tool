@@ -110,7 +110,7 @@ modifies the process to fit this tutorial.
     PORT=5200 docker compose run --service-ports $SERVICE_NAME bash
     ```
 
-5. Check the container:
+5. Check the container (`myproject/yourusernameYourModuleName`)
 
     ```shell
     % python --version
@@ -128,11 +128,11 @@ modifies the process to fit this tutorial.
     the letter `t`, case insensitive), will set it to "development" mode. This is
     necessary for proper construction of urls.
 
-7. Check the service is up by calling the `status` endpoint (`any terminal`)
+7. Check the service is up by calling the `status` endpoint (`myproject/ds-widget-tool`)
 
     ```shell
     curl -X POST http://localhost:5100 \
-        -d '{"version": "1.1", "id": "123", "method": "yourusernameSomeService.status", "params": []}'
+        -d "{\"version\": \"1.1\", \"id\": \"123\", \"method\": \"${SDK_MODULE}.status\", \"params\": []}"
     ```
 
     and you should get a response like this:

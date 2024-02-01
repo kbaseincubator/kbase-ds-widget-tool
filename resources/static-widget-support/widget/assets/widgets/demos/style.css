@@ -42,3 +42,8 @@
     margin-left: 0.5rem;
     flex: 0 0 auto;
 }
+
+/* Let us keep text on the about tab from getting uncomfortably wide */
+#about p {
+    max-width: 50rem;
+}

@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs" role="tablist" id="demo-page-tabs">
+<ul class="nav nav-pills" role="tablist" id="demo-page-tabs">
     <li class="nav-item" role="presentation">
         <button class="nav-link active" id="demo-tab" data-bs-toggle="tab" data-bs-target="#demo" type="button"
             role="tab" aria-controls="demo" aria-selected="false">
@@ -15,88 +15,276 @@
 <div class="tab-content" id="demo-page-tab-content">
     <div class="tab-pane fade show active pt-3 dataTablesOverride-ScrollingFlexFix" id="demo" role="tabpanel"
         aria-labelledby="demo-tab">
-        <div class="container container-fluid" id="media-viewer-py-form">
-            <div class="row mb-3">
-                <div class="col-sm-2 col-form-label">
-                    Object Ref:
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-7">
+                    <div class="container container-fluid" id="media-viewer-py-form">
+                        <div class="row mb-3">
+                            <div class="col-sm-4 col-form-label">
+                                Object Ref:
+                            </div>
+                            <div class="col-sm-8">
+                                <input name="object-ref" style="width: 10rem;">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4 col-form-label">
+                                Auth Token:
+                            </div>
+                            <div class="col-sm-8">
+                                {% if widget_config.runtime_mode == "DEVELOPMENT" %}
+                                <input name="auth-token" style="width: 24rem;" value="{{
+                                token|default('', true) }}">
+                                {% else %}
+                                <i>Using browser auth cookie: {{ token }}</i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col align-items-center">
+                                <button type="button" class="btn btn-primary" name="render">Render it</button>
+                                <button type="button" class="btn btn-danger" name="kill">Kill it</button>
+                            </div>
+                        </div>
+                    </div>
+            
                 </div>
-                <div class="col-sm-10">
-                    <input name="object-ref" style="width: 10rem;">
+                <div class="col-sm-5" style="display: flex; flex-direction: column;">
+                    <div style="font-weight: bold; font-style: italic; text-align: center;">Log</div>
+                    <div id="message-log" style="flex: 1 1 0; border: 1px solid silver;
+                    border-radius: 1rem; padding: 1rem; overflow-y: auto;"></div>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-sm-2 col-form-label">
-                    Auth Token:
-                </div>
-                <div class="col-sm-10">
-                    {% if widget_config.runtime_mode == "DEVELOPMENT" %}
-                    <input name="auth-token" style="width: 24rem;" value="{{ token }}">
-                    {% else %}
-                    <i>Using browser auth cookie: {{ token }}</i>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row mb-3">
-                <div class="col align-items-center">
-                    <button type="button" class="btn btn-primary" name="render">Render it</button>
-                    <button type="button" class="btn btn-danger" name="kill">Kill it</button>
+            </div> <div class="row">
+                <div class="col-sm-12">
+                    <div id="media-viewer-py-container" style="resize: vertical; overflow-y: auto;
+                    border: 1px solid silver; padding: 1rem; height: 30rem"></div>
+                    <script type="module">
+                        import SendChannel from '{{ asset_url }}/js/SendChannel.js';
+                        import ReceiveChannel from '{{ asset_url }}/js/ReceiveChannel.js';
+
+                        function log(message) {
+                            const timestamp = Intl.DateTimeFormat('en-US', 
+                                {year: "numeric", 
+                                 month: "2-digit", 
+                                 day: "2-digit", 
+                                 hour: "2-digit", 
+                                 minute: "2-digit", 
+                                 second: "2-digit", 
+                                 fractionalSecondDigits: 3,
+                                 hourCycle: "h24"
+                        
+                            }).format(Date.now());
+                            const logger = document.querySelector('#message-log');
+                            const logEntry = document.createElement('div');
+                            logEntry.innerText = `${timestamp}: ${message}`;
+                            logger.appendChild(logEntry);
+                        }
+
+                        function updateObjectRef() {
+
+                        } 
+
+                        function updateAuthToken() {
+
+                        }
+
+                        function isFormComplete() {
+
+                        }
+
+                        function evaluateForm() {
+                            const refValue = getFieldValue('object-ref');
+                            const authTokenValue = getFieldValue('auth-token');
+
+                            console.log('evaluating form', refValue, authTokenValue);
+                            const renderButton = getControl('button', 'render');
+
+                            if (refValue.length > 0 && authTokenValue.length > 0) {
+                                log('Evaluated form - complete');
+                                renderButton.removeAttribute('disabled');
+                            } else {
+                                log('Evaluated form - incomplete')
+                                renderButton.setAttribute('disabled', '');
+                            }
+                        }
+
+                        function insertWidgetApp() {
+                            const ref = getFieldValue('object-ref');
+                            const authToken = getFieldValue('auth-token') || null;
+
+
+                            if (authToken) {
+                                document.cookie = `kbase_session=${authToken};path=/`;
+                            }
+
+                            // The parameters, or params, for the app consist of both
+                            // the apps specific params, as well as that required to
+                            // interface with the host, in this case this demo app.
+
+                            const appParams = { ref };
+
+                            // To properly initialize an app, especially in an
+                            // environment like the Narrative, we need to set up a pair
+                            // of communication channels.
+                            // Now, it is certainly possible to run an app without this.
+
+                            const params = JSON.stringify({ ref });
+
+                            const integrationParams = {};  // TODO!
+
+                            // We are running the app on the same host, so we use our
+                            // own window origin!
+                            const url = new URL(window.location.origin);
+
+                            // THe path is composed of the "base_path", "widgets", and
+                            // the widget name. The base path will be empty if this is
+                            // running locally, and if running in the Narrative will be
+                            // the Dynamic Service path, which looks like
+                            // "dynserv/XXX.ModuleName/".
+                            
+                            url.pathname = `{{ widget_config.base_path }}/widgets/media_viewer_py`;
+
+                            // We provide the params ... as search params! Just they way
+                            // they are intended to be used.
+                            url.searchParams.set('params', params);
+
+                            // const src = `{{ widget_config.base_path }}/widgets/media_viewer_py?ref=${ref}`;
+
+                            const container = document.querySelector('#media-viewer-py-container');
+
+                            /**
+                             * Here we insert the iframe which, when loaded,
+                             * contains the app. 
+                             * 
+                            */
+                            log(`inserting widget app: ${url.pathname}`);
+                            container.innerHTML = `<iframe 
+                                src="${url.toString()}" 
+                                style="width: 100%; height: 100%;  border: none;" 
+                            />`;
+                        }
+
+                        function getFieldValue(name) {
+                            return document.querySelector(`#media-viewer-py-form input[name="${name}"]`).value;
+                        }
+
+                        function getFieldControl(name) {
+                            return document.querySelector(`#media-viewer-py-form input[name="${name}"]`);
+                        }
+
+                        function getControl(type, name) {
+                            return document.querySelector(`#media-viewer-py-form ${type}[name="${name}"]`)
+                        }
+
+                        function initializeForm() {
+                            // When a field changes, we want to update the ui. E.g.
+                            // enable the render button.
+                            const ref = getFieldControl('object-ref');
+                            ref.addEventListener('input', (event) => {
+                                evaluateForm();
+                            });
+
+                            const token_field = getFieldControl('auth-token');
+                            token_field.addEventListener('input', (event) => {
+                                evaluateForm();
+                            });
+
+                            const renderButton = getControl('button', 'render');
+                            renderButton.addEventListener('click', () => {
+                                insertWidgetApp();
+                            });
+
+                            const killButton = getControl('button', 'kill');
+                            killButton.addEventListener('click', () => {
+                                log('Killing the app');
+                                const container = document.querySelector('#media-viewer-py-container');
+                                container.innerHTML = '';
+                                log('It is dead');
+                            });
+                        }
+
+                        function main() {
+                            log('Initializing form');
+
+                            initializeForm();
+
+                            log('Started');
+                        }
+
+                        window.addEventListener('load', () => {
+                            main();
+                            evaluateForm();
+                        });
+                    </script>
                 </div>
             </div>
         </div>
-
-        <div id="media-viewer-py-container" style="resize: vertical; overflow-y: auto;
-border: 1px solid silver; padding: 1rem; height: 30rem"></div>
-
-        <script>
-            document.querySelector('#media-viewer-py-form button[name="render"]').addEventListener("click", (e) => {
-                const ref = document.querySelector('#media-viewer-py-form input[name="object-ref"]').value;
-                const token = (() => {
-                    const token_field = document.querySelector('#media-viewer-py-form input[name="auth-token"]');
-                    if (token_field) {
-                        return token_field.value;
-                    }
-                    return null;
-                })();
-
-                if (ref.length === 0) {
-                    alert('Please enter a ref');
-                    return;
-                }
-
-                if (token) {
-                    document.cookie = `kbase_session=${token};path=/`;
-                }
-
-                const params = JSON.stringify({ ref });
-
-
-                const url = new URL(window.location.origin);
-
-                url.pathname = `{{ widget_config.base_path }}/widgets/media_viewer_py`;
-                url.searchParams.set('params', params);
-
-                // const src = `{{ widget_config.base_path }}/widgets/media_viewer_py?ref=${ref}`;
-
-                const container = document.querySelector('#media-viewer-py-container');
-
-                container.innerHTML = `<iframe src="${url.toString()}" style="width: 100%; height: 100%;  border: none;" />`;
-            });
-
-            document.querySelector('#media-viewer-py-form button[name="kill"]').addEventListener("click", (e) => {
-                const container = document.querySelector('#media-viewer-py-container');
-                container.innerHTML = '';
-            });
-        </script>
     </div>
 
     <div class="tab-pane fade pt-3 dataTablesOverride-ScrollingFlexFix" id="about" role="tabpanel"
         aria-labelledby="about-tab">
-        <p>In this demo, we provide a landing page for the Media data type, written
+        <p>
+            In this demo, we provide a landing page for the Media data type, written
             primarily in Python, utilizing Jinja2, with interactivity via Javascript, utilizing
-            jQuery, Bootstrap, DataTables (not yet?), and KBase libraries.</p>
+            jQuery, Bootstrap, DataTables (not yet?), and KBase libraries.
+        </p>
 
-        <p>Note that as this is built on the KBase kbase/sdkbase2:python image, we are
-            stuck, for now, with whatever the limitations are of the image. E.g. Python is 3.6,
-            pretty old.</p>
+        <p>
+            Note that as this is built on the KBase <a
+            href="https://github.com/kbase/sdkbase2" target="_blank">kbase/sdkbase2:python</a>
+            image, we are
+            constrainted with whatever the limitations are of the image. E.g. Python is 3.6,
+            pretty old.
+        </p>
+
+        <p>
+            To use this demo, complete the "Object Ref" field with the full object
+            reference for the Media object you wish to view, and the "Auth Token" with
+            a KBase Login Token you have acquired by signin in to KBase.
+        </p>
+
+        <h3>Object Ref</h3>
+
+        <p>
+            If you don't know how to obtain an Object Ref for a Media Object, here is
+            how to do it:
+        </p>
+
+        <ul>
+            <li>Sign in to KBase</li>
+            <li>Create a Narrative, or open an existing one</li>
+            <li>Using the Data Panel's data tool, select the Example tab</li>
+            <li>Scroll through until you find the Media objects</li>
+            <li>Click the Copy button to copy it to your narrative</li>
+            <li>In the data panel, click the ellipsis button on the upper right corner
+    of the Media object </li>
+            <li>Copy the object ref</li>
+        </ul>
+
+        <h3>Auth Token</h3>
+
+        <p>An auth token, known more precisely as the KBase Login Session Token, is
+        generated when you sign in to KBase and is placed in a cookie in your browser.
+        The cookie is named "kbase_session"</p>
+
+        <p>There are two ways to obtain the cookie:</p>
+        
+        <h4>Browser Console</h4>
+        <ul>
+            <li>Open the browser console (if in developer mode) and issue the command:
+            <code>document.cookie</code>. (If you are here, you are a developer! So you
+            should be running your browser in developer mode while developing with KBase)</li>
+        </ul>
+
+        <h4>KBase UI</h4>
+        <p>The KBase user interface has a "session" tool to show you facts about your
+        current login session. To access this page:</p>
+
+        <ul>
+            <li>Go to your "Account Manager" </li>
+            <li>Select the "Current Login Session" tab</li>
+            <li>You should seek your token displayed on the screen. You may copy/paste
+            that into this demo.</li>
+        </ul>
     </div>
 </div>
