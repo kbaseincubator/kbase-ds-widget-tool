@@ -73,7 +73,7 @@ modifies the process to fit this tutorial.
 
 ## B. Update with the dynamic service widget tool
 
-1. Install the tool (`myproject`)
+1. Install the Dynamic Service Widget tool in the project directory (`myproject`)
 
     ```shell
     git clone https://github.com/eapearson/kbase-ds-widget-tool
@@ -84,7 +84,6 @@ modifies the process to fit this tutorial.
 
     ```shell
     export MODULE_DIR=$(pbpaste)
-    echo "${MODULE_DIR}"
     ./Taskfile check-module $MODULE_DIR
     ./Taskfile init-module $MODULE_DIR
     ```
@@ -99,7 +98,7 @@ modifies the process to fit this tutorial.
 
     ```shell
     export KBASE_ENDPOINT=https://ci.kbase.us/services/ 
-    export SERVICE_NAME=$(echo "$SDK_MODULE" | tr '[:upper:]' '[:lower:]')
+    export SERVICE_NAME=$(echo "$MODULE_DIR" | tr '[:upper:]' '[:lower:]')
     docker compose run --service-ports $SERVICE_NAME bash
     ```
 
