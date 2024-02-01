@@ -127,11 +127,23 @@ modifies the process to fit this tutorial.
     the letter `t`, case insensitive), will set it to "development" mode. This is
     necessary for proper construction of urls.
 
-7. Check the service is up by calling the `status` endpoint (`myproject/ds-widget-tool`)
+7. Copy the SDK_MODULE variable (`myproject/yourusernameYourModuleName`)
+
+    ```shell
+    echo $SDK_MODULE | pbcopy
+    ```
+
+8. Create the SDK_MODULE variable for ds-widget-tool (`myproject/ds-widget-tool`)
+
+    ```shell
+    export SDK_MODULE=$(pbpaste)
+    ```
+
+9. Check the service is up by calling the `status` endpoint (`myproject/ds-widget-tool`)
 
     ```shell
     curl -X POST http://localhost:5100 \
-        -d "{\"version\": \"1.1\", \"id\": \"123\", \"method\": \"${MODULE_DIR}.status\", \"params\": []}"
+        -d "{\"version\": \"1.1\", \"id\": \"123\", \"method\": \"${SDK_MODULE}.status\", \"params\": []}"
     ```
 
     and you should get a response like this:
@@ -152,19 +164,19 @@ modifies the process to fit this tutorial.
     }
     ```
 
-8. Try out the demo widgets
+10. Try out the demo widgets
 
     The widget support package comes with some widget tools and also sample widgets.
 
     In this document we'll cover just two: the config widget, and the demos widget.
 
-9. Try the built-in `config` widget (your browser)
+11. Try the built-in `config` widget (your browser)
 
     [http://localhost:5100/widgets/config](http://localhost:5100/widgets/config)
 
     (substituting for port 5100 if you need to).
 
-10. The `demos` widget (your browser)
+12. The `demos` widget (your browser)
 
     [http://localhost:5100/widgets/demos](http://localhost:5100/widgets/demos)
 
