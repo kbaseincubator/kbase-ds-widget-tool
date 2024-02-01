@@ -54,7 +54,7 @@ In the impl file, add this context to the status handler:
 
 
 To apply this to the server, you should keep a copy of the server file next to the
-generated one, and swapt it out in the compile task of the Makefile.
+generated one, and swap it out in the compile task of the Makefile.
 
 e.g. 
 

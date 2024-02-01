@@ -59,6 +59,15 @@ function status {
     docker compose run --rm ds-widget-tool "python src/status.py"
 }
 
+#
+# Removes development artifacts from the repo resources directory.
+# This is useful while iterating on this tool to create test services, 
+# to prevent development artifacts being copied into the service.
+#
+function clean {  
+    docker compose run --rm -v "${1:-$PWD}:/kb/clean_dir" ds-widget-tool "python src/clean.py /kb/clean_dir"
+}
+
 function help {
     echo "$(basename $0) <task> <args>"
     echo "Runs the tasks listed below."

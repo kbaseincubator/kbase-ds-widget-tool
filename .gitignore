@@ -8,3 +8,4 @@ __pycache__
 _trash
 _working
 .DS_Store
+.vscode

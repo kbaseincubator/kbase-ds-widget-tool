@@ -7,7 +7,7 @@ from string import Template
 
 from yaml import YAMLError, dump, safe_load
 
-from .utils import error_exit, info_feedback, success_feedback
+from src.utils import error_exit, info_feedback, success_feedback
 
 
 class WidgetSupport(object):

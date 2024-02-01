@@ -17,19 +17,8 @@ class PythonWidget(object):
         self.widget_package_name = widget_package_name
         self.widget_config = widget_config
         self.path = path
-
         self.widget_mod = importlib.import_module(f"widget.widgets.{widget_package_name}.widget")
 
-        # current_dir = os.path.dirname(os.path.realpath(__file__))
-
-        # # Create a root path for all file access for the widget root file and all assets.
-        # widget_path = os.path.abspath(os.path.join(current_dir, '../../../../widget/widgets',  path))
-
-        # # Ensure the widget exists.
-        # if not os.path.isdir(widget_path):
-        #     raise WidgetError(f"The static widget path was not found: {widget_namnamee}")
-
-        # self.widget_path = widget_path
 
     def handle(self, rest_path, request_env):
         """
@@ -39,8 +28,6 @@ class PythonWidget(object):
         params). The former is to be obtained from url path and is passed in as
         "rest_path", and the latter is part of the request_env, which we just take as a
         whole here.
-
-        The implementation is split into two
         """
 
         def handler(request_env):
@@ -56,13 +43,18 @@ class PythonWidget(object):
                 params = parse_qs(query_string)
 
             #
-            # The auth token comes from the cookie...
+            # The auth token comes from the cookie, either `kbase_session`, available
+            # for services in all environments but not in prod, in which services run on
+            # kbase.us and front ends on narrative.kbase.us. In prod, the cookie
+            # 'kbase_session_backup` is used.
             #
             browser_cookie = request_env.get('HTTP_COOKIE') or ''
             cookie = cookies.SimpleCookie()
             cookie.load(browser_cookie)
             if 'kbase_session' in cookie:
                 token = cookie['kbase_session'].value
+            elif self.widget_config.get('deploy_environment') == 'prod' and 'kbase_session_backup' in cookie:
+                token = cookie['kbase_session_backup'].value
             else:
                 token = None
 
@@ -80,5 +72,3 @@ class PythonWidget(object):
             return "200 OK", "text/html; charset=utf-8", content
 
         return handler(request_env)
-
-    

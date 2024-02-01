@@ -684,7 +684,7 @@ class JSONRPCClient {
     
 }
 
-class ServiceClient {
+export class ServiceClient {
     /**
      * A class representing a client for a KBase core service based on JSON-RPC 1.1
      *
@@ -770,7 +770,7 @@ class ServiceClient {
     }
 }
 
-function workspaceInfoToObject(wsInfo) {
+export function workspaceInfoToObject(wsInfo) {
     return {
         id: wsInfo[0],
         name: wsInfo[1],
@@ -786,7 +786,7 @@ function workspaceInfoToObject(wsInfo) {
     };
 }
 
-function objectInfoToObject(objInfo) {
+export function objectInfoToObject(objInfo) {
     const type = objInfo[2].split(/[-.]/);
 
     return {

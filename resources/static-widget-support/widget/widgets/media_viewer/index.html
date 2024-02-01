@@ -8,11 +8,6 @@
         <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
         <link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/sc-2.2.0/datatables.min.css" rel="stylesheet">
         <script src="https://cdn.datatables.net/v/bs5/dt-1.13.6/sc-2.2.0/datatables.min.js"></script>
-        <!-- These are all the KBase / custom files we need -->
-        <!-- <link href="/widgets/media_viewer/widgets/static/style.css" rel="stylesheet"> -->
-        <!-- <script src="/widgets/assets/js/lib.js"></script>
-        <script src="/widgets/assets/js/client.js"></script>
-        <link href="/widgets/media_viewer/style.css" rel="stylesheet"> -->
     </head>
     <body>
         <div id="loading">
@@ -155,14 +150,16 @@
                 </div>
             </div>
         </div>
-        <script>
+        <script type="module">
+            // TODO:
+            import {start} from './media_viewer/index.js';
+
             // This is our boot script. We can't access any local resources yet, because
             // if we are in an iframe, we'll be on a path, and relative urls won't work
             // as we hope they might. We can't even set the base url for the doc.
             async function main() {
                 const widgetBasePath = (() => {
                     const match = window.location.pathname.match(/^(.*)\/widgets\/(.+)$/);
-                    console.log('match?', window.location.pathname, match);
                     if (!match) {
                         throw new Error('Invalid widget url -- cannot construct widget base path');
                     }
@@ -203,13 +200,12 @@
                 }
 
                 // Shared resources, so accessed from 'assets'
-                await addScript('widgets/assets/js/lib.js');
-                await addScript('widgets/assets/js/client.js');
 
                 // Own resources, so accessed through the widget, which maps here.
                 await addStylesheet('widgets/media_viewer/style.css');
-                addScript('widgets/media_viewer/index.js');
                 fixImages();
+
+                start();
             }
             window.addEventListener('load', () => {
                 main();

@@ -3,6 +3,7 @@ import os
 import re
 
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader
+
 from widget.lib.generic_client import GenericClient
 from widget.lib.widget_error import WidgetError
 from widget.lib.widget_utils import object_info_to_dict, workspace_info_to_dict
@@ -181,8 +182,6 @@ class WidgetBase:
         type_module, type_name, type_version_major, type_version_minor = re.split(r'[.-]', object_info['type_id'])
 
         type_id_versionless = '.'.join([type_module, type_name])
-
-        print('HMM?', object_info['type_id'], type_module, type_name, type_id_versionless)
 
         # if type_module != "KBaseStructure" and type_name != "ProteinStructures":
         if type_id_versionless not in allowed_types:

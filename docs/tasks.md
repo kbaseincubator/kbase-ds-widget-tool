@@ -37,6 +37,17 @@ Prints information about the `Taskfile` script as well as all available tasks.
 
 Prints information about the `ds-widget-tool`.
 
+## `clean`
+
+Removes development artifacts from the `resources` directory, to prevent them being
+copied into a service.
+
+The same files "cleaned" from `resources` are also included in `.gitignore`. The utility
+of this script is to ease iteration over the process of adding widget support to a
+dynamic service.
+
+Such files include Python bytcode files, macOS finder files, editor backup files.
+
 ## `check-module $MODULE_PATH`
 
 Inspects the directory provided by `$MODULE_PATH` and prints out the results. If all
@@ -45,7 +56,7 @@ inspections succeed, the directory contains a valid KBase Dynamic Service.
 The inspection is not very deep, so it does not determine, for instance, that the
 service actually runs or runs without error, etc.
 
-## `init-module $MODULE_PATH``
+## `init-module $MODULE_PATH`
 
 Adds widget support to the KBase Dynamic Service located in the directory
 `$MODULE_PATH`.

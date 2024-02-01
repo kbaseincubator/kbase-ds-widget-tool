@@ -1,6 +1,7 @@
 /* Some global styles */
 html {
     font-size: 14px;
+    height: 100%;
 }
 
 body {
@@ -62,7 +63,8 @@ dom: '<"dataTablesOverride-top"if>t'
     flex-direction: column;
 }
 
-.dataTablesOverride-ScrollingFlexFix th {
+.dataTablesOverride-ScrollingFlexFix th,
+.dataTablesOverride-ScrollingFlexFix td {
     vertical-align: middle;
 }
 

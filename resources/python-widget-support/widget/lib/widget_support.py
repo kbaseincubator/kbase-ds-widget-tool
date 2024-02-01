@@ -30,15 +30,19 @@ class WidgetSupport(object):
 
         dev_env_var = os.environ.get('DEV') or ''
         self.runtime_mode = "DEVELOPMENT" if dev_env_var.lower().startswith('t') else "PRODUCTION"
+
+        print(f'!! RUNTIME MODE: {self.runtime_mode}')
         
         if self.runtime_mode == "DEVELOPMENT":
             self.base_path = ""
         else:
             self.base_path = f"/dynserv/{service_instance_hash}.{service_package_name}"
             
-        result = re.match(r'^((?:.+)://(?:.+?))(?:/.*)?$', service_config['kbase-endpoint'])
+        result = re.match(r'^(.+)://(.+?)(?:/.*)?$', service_config['kbase-endpoint'])
 
-        origin = result.group(1)
+        protocol = result.group(1)
+        hostname = result.group(2)
+        origin = f'{protocol}://{hostname}'
 
         #
         # UI origin is designed to match the kbase deploy environment, not this service,
@@ -46,8 +50,11 @@ class WidgetSupport(object):
         #
         if origin == 'https://kbase.us':
             self.ui_origin = 'https://narrative.kbase.us'
+            self.deploy_environment = 'prod'
         else:
             self.ui_origin = origin
+            deploy_env, _, _ = hostname.split('.')
+            self.deploy_environment = deploy_env
 
         #
         # Here we create a set of origins and urls that point back to this service.
@@ -72,12 +79,11 @@ class WidgetSupport(object):
             self.service_origin = origin
             self.service_url = origin + self.base_path
 
-
         self.initialize_widgets()
 
     def load_config(self):
         with open(os.path.join(os.path.dirname(__file__), '../../../widget/widgets.yml'), 'r', encoding="utf-8") as fin:
-            return yaml.load(fin)
+            return yaml.safe_load(fin)
 
     def initialize_widgets(self):
         for widget in self.widget_config['widgets']:
@@ -109,6 +115,7 @@ class WidgetSupport(object):
             "runtime_mode": self.runtime_mode,
             "base_path": self.base_path,
             "ui_origin": self.ui_origin,
+            "deploy_environment": self.deploy_environment,
             "service_origin": self.service_origin,
             "service_url": self.service_url
         }
@@ -188,5 +195,23 @@ class WidgetSupport(object):
         global GLOBAL_WIDGET_SUPPORT
         GLOBAL_WIDGET_SUPPORT = self
 
-def get_global_widget_support():
-    return GLOBAL_WIDGET_SUPPORT
+
+def handle_widget_request(http_environment):
+    """
+    """
+    path = http_environment['PATH_INFO']
+
+    # All widget access is rooted at /widgets.
+    if not path.startswith('/widgets'):
+        return None
+
+    # Global widget support is created by the implementation module, which must itself
+    # be created before the service can operate, so it is safe to assume it is
+    # initialized by the time a request is handled, and this function called.
+    widget_support = GLOBAL_WIDGET_SUPPORT
+    if widget_support is None:
+        # raise ServerError('Widget support not yet available for /widgets!')
+        error_message = 'Widget support not yet available for /widgets!'
+        return "500 Internal Server Error", {'content-type': 'text/plain'}, error_message
+
+    return widget_support.handle_widget(http_environment)

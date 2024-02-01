@@ -126,6 +126,14 @@ modifies the process to fit this tutorial.
     ?? test/run_tests.sh
     ```
 
+    > Note: Check the output of `make all` for errors.
+    > For example, a common error is that it will attempt to download
+    > some basic service clients from `appdev.kbase.us`. If this service
+    > is down, is blocked, or your internet connection is down, an error
+    > will be emitted, like:
+    >
+    > `java.io.IOException: Server returned HTTP response code: 504 for URL: https://appdev.kbase.us/services/catalog`
+
 6. Commit the changes again (`myproject/${SDK_MODULE}`)
 
     Let's commit the files changed or added by `make all`, so that when we add widget
