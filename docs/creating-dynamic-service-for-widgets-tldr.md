@@ -98,7 +98,7 @@ modifies the process to fit this tutorial.
 
     ```shell
     export KBASE_ENDPOINT=https://ci.kbase.us/services/ 
-    export SERVICE_NAME=$(echo "$MODULE_DIR" | tr '[:upper:]' '[:lower:]')
+    export SERVICE_NAME=$(echo "$SDK_MODULE" | tr '[:upper:]' '[:lower:]')
     docker compose run --service-ports $SERVICE_NAME bash
     ```
 
@@ -131,7 +131,7 @@ modifies the process to fit this tutorial.
 
     ```shell
     curl -X POST http://localhost:5100 \
-        -d "{\"version\": \"1.1\", \"id\": \"123\", \"method\": \"${SDK_MODULE}.status\", \"params\": []}"
+        -d "{\"version\": \"1.1\", \"id\": \"123\", \"method\": \"${MODULE_DIR}.status\", \"params\": []}"
     ```
 
     and you should get a response like this:
