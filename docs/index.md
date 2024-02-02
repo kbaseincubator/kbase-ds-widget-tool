@@ -3,7 +3,8 @@
 - [Creating a dynamic service with widgets](./creating-dynamic-service-for-widgets.md)
   - [TLDR version](./creating-dynamic-service-for-widgets-tldr.md)
   - [Adding demo widgets](./adding-demo-widgets.md)
-  - [Publishing your service](./publishing-your-service.md)
+  - [Registering your service](./registering-your-service.md)
+  - [Using Demo Widgets](./using-demo-widgets.md)
 - [Tasks](./tasks.md)
 - [Dev Notes](./dev-notes.md)
 - Creating a ...
