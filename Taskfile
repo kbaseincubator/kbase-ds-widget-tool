@@ -65,7 +65,7 @@ function status {
 # to prevent development artifacts being copied into the service.
 #
 function clean {  
-    docker compose run --rm -v "${1:-$PWD}:/kb/clean_dir" kbaes-ds-widget-tool "python src/clean.py /kb/clean_dir"
+    docker compose run --rm -v "${1:-$PWD}:/kb/clean_dir" kbase-ds-widget-tool "python src/clean.py /kb/clean_dir"
 }
 
 function help {
